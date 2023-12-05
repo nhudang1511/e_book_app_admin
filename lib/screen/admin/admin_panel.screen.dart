@@ -51,12 +51,12 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
       body: SafeArea(
         child: Row(
           children: [
-            if(Responsive.isDesktop(context))
-             Expanded(
-              child: SliderMenu(
-                  tabController: _tabController,
-                  selectedTabIndex: _selectedTabIndex),
-             ),
+            // if(Responsive.isDesktop(context))
+            //  Expanded(
+            //   child: SliderMenu(
+            //       tabController: _tabController,
+            //       selectedTabIndex: _selectedTabIndex),
+            //  ),
             Expanded(
               flex: 4,
               child: Column(

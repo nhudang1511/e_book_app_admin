@@ -19,7 +19,7 @@ class Header extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          if(!Responsive.isDesktop(context))
+          //if(!Responsive.isDesktop(context))
             IconButton(
                 onPressed: context.read<MenuAppController>().controlMenu,
                 icon: const Icon(Icons.menu, color: Colors.white,)),
