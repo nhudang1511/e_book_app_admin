@@ -1,3 +1,5 @@
+import 'package:e_book_admin/blocs/blocs.dart';
+import 'package:e_book_admin/repository/repositories.dart';
 import 'package:e_book_admin/screen/admin/admin_panel.screen.dart';
 import 'package:e_book_admin/screen/admin/components/menu_app_controller.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,6 +38,22 @@ class _MyAppState extends State<MyApp> {
     return MultiBlocProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => MenuAppController()),
+        BlocProvider(
+          create: (_) => AuthorBloc(authorRepository: AuthorRepository())
+            ..add(LoadAuthors()),
+        ),
+        BlocProvider(
+          create: (_) => BookBloc(bookRepository: BookRepository())
+            ..add(LoadBooks()),
+        ),
+        BlocProvider(
+          create: (_) => CategoryBloc(categoryRepository: CategoryRepository())
+            ..add(LoadCategory()),
+        ),
+        BlocProvider(
+          create: (_) => UserBloc(userRepository: UserRepository())
+            ..add(LoadUser()),
+        ),
       ],
       child: MaterialApp(
         title: 'E Book App Admin',
