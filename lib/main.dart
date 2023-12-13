@@ -2,6 +2,7 @@ import 'package:e_book_admin/blocs/blocs.dart';
 import 'package:e_book_admin/repository/repositories.dart';
 import 'package:e_book_admin/screen/admin/admin_panel.screen.dart';
 import 'package:e_book_admin/screen/admin/components/menu_app_controller.dart';
+import 'package:e_book_admin/screen/login/login_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'config/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -58,8 +59,9 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'E Book App Admin',
         debugShowCheckedModeBanner: false,
-        theme: Provider.of<ThemeProvider>(context).themeData,
-        home: AdminPanel(),
+        theme: darkTheme,
+        home: const LoginScreen(),
+        darkTheme: darkTheme,
       ),
     );
   }
