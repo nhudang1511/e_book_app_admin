@@ -1,17 +1,32 @@
+import 'package:e_book_admin/blocs/blocs.dart';
 import 'package:e_book_admin/model/models.dart';
+import 'package:e_book_admin/screen/admin/admin_categories_screen/component/form_edit_category.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CategoryDataTable extends StatelessWidget {
+class CategoryDataTable extends StatefulWidget {
   const CategoryDataTable({
     Key? key,
     required this.id,
     required this.name,
-    required this.status,
     required this.listCategories,
   }) : super(key: key);
 
-  final String id, name, status;
+  final String id, name;
   final List<Category> listCategories;
+
+  @override
+  State<StatefulWidget> createState() => _CategoryDataTableState();
+}
+
+class _CategoryDataTableState extends State<CategoryDataTable> {
+  late CategoryBloc categoryBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    categoryBloc = BlocProvider.of(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,15 +49,18 @@ class CategoryDataTable extends StatelessWidget {
         ),
         child: PaginatedDataTable(
           columns: [
-            DataColumn(label: Text(id)),
-            DataColumn(label: Text(name)),
-            DataColumn(label: Text(status)),
+            DataColumn(
+              label: Text(widget.id),
+            ),
+            DataColumn(
+              label: Text(widget.name),
+            ),
             const DataColumn(
               label: Text('Actions     '),
               numeric: true,
             ),
           ],
-          source: _DataSource(listCategories),
+          source: _DataSource(widget.listCategories, categoryBloc, context),
           rowsPerPage: 5, // Change this to set the number of rows per page.
         ),
       ),
@@ -52,8 +70,10 @@ class CategoryDataTable extends StatelessWidget {
 
 class _DataSource extends DataTableSource {
   final List<Category> listCategories;
+  final CategoryBloc categoryBloc;
+  final BuildContext context;
 
-  _DataSource(this.listCategories);
+  _DataSource(this.listCategories, this.categoryBloc, this.context);
 
   @override
   DataRow getRow(int index) {
@@ -62,17 +82,60 @@ class _DataSource extends DataTableSource {
       cells: [
         DataCell(Text(item.id)),
         DataCell(Text(item.name)),
-        DataCell(Text(item.status.toString())),
         DataCell(
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return FormEditCategory(category: item);
+                    },
+                  );
+                },
                 icon: const Icon(Icons.edit, color: Colors.white),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text(
+                          'Confirm',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                        content: const Text('Are you sure you want to delete?'),
+                        actions: <Widget>[
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text(
+                              'Cancel',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              categoryBloc.add(DeleteCategory(item.id));
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text(
+                              'Confirm',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
                 icon: const Icon(Icons.delete, color: Colors.white),
               )
             ],

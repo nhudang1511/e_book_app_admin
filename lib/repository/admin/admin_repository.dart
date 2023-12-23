@@ -10,14 +10,14 @@ class AdminRepository extends BaseAdminRepository {
   static var client = http.Client();
 
   @override
-  Future<bool> login(String email, String passWord) async{
+  Future<bool> login(String email, String passWord) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
     };
-    var url = Uri.http(
-      Config.apiURL,
-      '${Config.API}/admin/login/?email=$email&passWord=$passWord',
-    );
+    var url = Uri.http(Config.apiURL, '${Config.API}/admin/login', {
+      'email': email,
+      'passWord': passWord,
+    });
     var response = await client.post(
       url,
       headers: requestHeaders,
@@ -28,7 +28,6 @@ class AdminRepository extends BaseAdminRepository {
       html.window.localStorage['token'] = data['token'];
       return true;
 
-      //return true;
     } else {
       return false;
     }
@@ -52,7 +51,6 @@ class AdminRepository extends BaseAdminRepository {
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       return Admin.fromJson(data['data']);
-
     } else {
       return null;
     }
@@ -62,6 +60,4 @@ class AdminRepository extends BaseAdminRepository {
   Future<void> signOut() async {
     html.window.localStorage.remove('token');
   }
-
-
 }

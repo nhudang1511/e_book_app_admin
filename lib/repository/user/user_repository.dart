@@ -10,7 +10,7 @@ class UserRepository extends BaseUserRepository {
   static var client = http.Client();
 
   @override
-  Future<List<User>?> getAllUser() async{
+  Future<List<User>?> getAllUser() async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
@@ -34,4 +34,25 @@ class UserRepository extends BaseUserRepository {
     }
   }
 
+  @override
+  Future<bool> blockUser(String userId) async {
+    Map<String, String> requestHeaders = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ${html.window.localStorage['token']}',
+    };
+    var url =
+        Uri.http(Config.apiURL, '${Config.API}/user/block/', {'userId': userId});
+    var response = await client.put(
+      url,
+      headers: requestHeaders,
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+
+      //return true;
+    } else {
+      return false;
+    }
+  }
 }

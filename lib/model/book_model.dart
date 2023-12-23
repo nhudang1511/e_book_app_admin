@@ -5,13 +5,13 @@ class Book {
   late String authodId;
   late List<String> categoryId;
   late String description;
-  late String imageUrl;
+  late dynamic imageUrl;
   late String language;
   late int price;
   late DateTime publishDate;
   late bool status;
   late String title;
-  late List<String> bookPreview;
+  late List<dynamic> bookPreview;
   late int chapters;
   late String country;
 

@@ -1,9 +1,7 @@
 import 'package:e_book_admin/blocs/blocs.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../model/admin_model.dart';
-import '../components/custom_table_data.dart';
-import '../dashboard/components/header.dart';
+import '../components/header.dart';
 import 'components/user_data_table.dart';
 
 class AdminUsersScreen extends StatelessWidget {
@@ -25,14 +23,14 @@ class AdminUsersScreen extends StatelessWidget {
                 const Header(
                   title: 'Users',
                 ),
-
                 UserDataTable(
                   id: 'User ID',
                   fullName: 'Full name',
                   email: 'Email',
                   phone: 'Phone number',
                   status: 'Status',
-                  listUsers: state.users,
+                  listUsers: state.users
+                    ..sort((a, b) => a.fullName.compareTo(b.fullName)),
                 )
               ],
             ),

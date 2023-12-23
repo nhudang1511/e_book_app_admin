@@ -1,37 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
-  final String? labelText;
   final String hintText;
   final TextEditingController controller;
-  final Widget? icon;
-  final bool obscureText;
-  final int maxLines;
-  final TextInputType keyboardType;
-  final String? errorText;
   final void Function(String)? onChanged;
   final String? successMessage;
-  final Icon? prefixIcon;
-  final bool willContainPrefix;
-  final List<TextInputFormatter>? inputFormatters;
-  // final String? Function(String?)? validator;
   const CustomTextField({
     Key? key,
-    this.labelText = "",
     required this.hintText,
     required this.controller,
-    this.icon,
-    this.obscureText = false,
-    this.maxLines = 1,
-    this.keyboardType = TextInputType.name,
     // this.validator,
-    this.errorText,
-    this.onChanged,
+    required this.onChanged,
     this.successMessage,
-    this.prefixIcon,
-    this.willContainPrefix = false,
-    this.inputFormatters,
   }) : super(key: key);
 
   @override
@@ -39,24 +19,20 @@ class CustomTextField extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          labelText!,
-          style: const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
         TextFormField(
           autofocus: true,
-          keyboardType: keyboardType,
-          obscureText: obscureText,
           controller: controller,
-          inputFormatters: inputFormatters,
-          style: const TextStyle(fontSize: 20),
+          validator: (value) {
+            if (value!.isEmpty) {
+              return "Enter email";
+            }
+            return null;
+          },
+          style: const TextStyle(fontSize: 16, color: Colors.black),
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderSide: const BorderSide(
-                color: Color(0xFF333333),
+                color: Colors.black,
                 width: 2,
               ),
               borderRadius: BorderRadius.circular(15),
@@ -70,27 +46,20 @@ class CustomTextField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                color: Color(0xFFB58BDB),
+                color: Color(0xFF8C2EEE),
                 width: 2,
               ),
               borderRadius: BorderRadius.circular(15),
             ),
             hintText: hintText,
-            suffixIcon: icon,
-            errorText: errorText,
-            prefixIcon: prefixIcon,
+            hintStyle: Theme.of(context).textTheme.bodySmall!.copyWith(fontWeight: FontWeight.normal),
             filled: true,
-            fillColor: const Color(0xFF333333),
+            fillColor: Colors.white,
             contentPadding: const EdgeInsets.all(10),
           ),
-          maxLines: maxLines,
           // validator: validator,
           onChanged: onChanged,
         ),
-        Text(
-          successMessage ?? "",
-          style: const TextStyle(color: Colors.green),
-        )
       ],
     );
   }

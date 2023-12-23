@@ -1,170 +1,241 @@
+import 'package:e_book_admin/blocs/blocs.dart';
+import 'package:e_book_admin/model/models.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import '../../../../config/responsive.dart';
 
 class DashBoardRow2 extends StatelessWidget {
-  const DashBoardRow2({
+  DashBoardRow2({
     super.key,
   });
 
+  String shortenText(String text, int maxLength) {
+    if (text.length <= maxLength) {
+      return text;
+    } else {
+      int endIndex =
+          maxLength - 3; // Giảm ba ký tự để có chỗ cho dấu chấm ba chấm
+      while (endIndex > 0 && text[endIndex] != ' ') {
+        endIndex--;
+      }
+      return '${text.substring(0, endIndex)}...';
+    }
+  }
+
+  List<ChartData> chartData(List<ViewModel> listView, List<Book> listBook) {
+    listView.sort((a, b) => b.views.compareTo(a.views));
+    List<ViewModel> topValues;
+    if (listView.length >= 5) {
+      topValues = listView.sublist(0, 5);
+    } else {
+      topValues = listView;
+    }
+    List<ChartData> chartData = [];
+    for (var views in topValues) {
+      Book? book = listBook.firstWhere((book) => book.id == views.bookId);
+      chartData.add(ChartData(book.title, views.views));
+    }
+
+    return chartData;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return (!Responsive.isMobile(context)) ? Row(
-      children: [
-        Expanded(
-            flex: 2,
-            child: Container(
-              height: MediaQuery.of(context).size.height/2,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,),
-              margin: const EdgeInsets.all(10),
-              child: SfCartesianChart(
-                legend: const Legend(isVisible: true, opacity: 0.7),
-                title: ChartTitle(text: 'Inflation rate'),
-                plotAreaBorderWidth: 0,
-                primaryYAxis: NumericAxis(
-                    labelFormat: '{value}%',
-                    axisLine: const AxisLine(width: 0),
-                    majorTickLines: const MajorTickLines(size: 0)),
-                primaryXAxis: NumericAxis(
-                    interval: 1,
-                    majorGridLines: const MajorGridLines(width: 0),
-                    edgeLabelPlacement: EdgeLabelPlacement.shift),
-                series: <ChartSeries<ChartData, int>>[
-                  SplineAreaSeries<ChartData, int>(
-                    dataSource: <ChartData>[
-                      ChartData(2010, 35),
-                      ChartData(2011, 13),
-                      ChartData(2012, 34),
-                      ChartData(2013, 27),
-                      ChartData(2014, 40)
-                    ],
-                    color: const Color.fromRGBO(75, 135, 185, 0.6),
-                    borderColor: const Color.fromRGBO(75, 135, 185, 1),
-                    borderWidth: 2,
-                    name: 'January',
-                    xValueMapper: (ChartData sales, _) => sales.x,
-                    yValueMapper: (ChartData sales, _) => sales.y,
-                  ),
-                  SplineAreaSeries<ChartData, int>(
-                    dataSource: <ChartData>[
-                      ChartData(2010, 15),
-                      ChartData(2011, 53),
-                      ChartData(2012, 74),
-                      ChartData(2013, 17),
-                      ChartData(2014, 80)
-
-                    ],
-                    borderColor: const Color.fromRGBO(192, 108, 132, 1),
-                    color: const Color.fromRGBO(192, 108, 132, 0.6),
-                    borderWidth: 2,
-                    name: 'February',
-                    xValueMapper: (ChartData sales, _) => sales.x,
-                    yValueMapper: (ChartData sales, _) => sales.y,
-                  )
-                ],
-                tooltipBehavior: TooltipBehavior(enable: true),
-              ),
-            )
-        ),
-        Expanded(
-            flex: 1,
-            child: Container(
-              height: MediaQuery.of(context).size.height/2,
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: const Color(0xFFFDC844),),
-              margin: const EdgeInsets.all(10),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text('Top view', style: Theme.of(context).textTheme.displaySmall,),
-                  Image.network(
-                    'https://product.hstatic.net/200000343865/product/hoang-tu-be_tb-2022_39672e31853b42be866b92319496455d_master.jpg',
-                    height: MediaQuery.of(context).size.height/3,
-                  ),
-                  Text('Hoàng tử bé', style: Theme.of(context).textTheme.displaySmall,)
-                ],
-              ),
-            ))
-      ],
-    ): Column(
-      children: [
-        Container(
-          height: MediaQuery.of(context).size.height/2,
-          width: MediaQuery.of(context).size.width - 20,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: const Color(0xFFFDC844),),
-          margin: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
+    return (!Responsive.isMobile(context))
+        ? Row(
             children: [
-              Text('Top view', style: Theme.of(context).textTheme.displaySmall,),
-              Image.network(
-                'https://product.hstatic.net/200000343865/product/hoang-tu-be_tb-2022_39672e31853b42be866b92319496455d_master.jpg',
-                height: MediaQuery.of(context).size.height/4,
+              Expanded(
+                flex: 2,
+                child: BlocBuilder<ViewBloc, ViewState>(
+                  builder: (context, state) {
+                    if (state is ViewLoading) {
+                      return const Center(
+                          child: CircularProgressIndicator());
+                    }
+                    if (state is ViewLoaded) {
+                      List<ViewModel> listViews = state.views;
+                      return BlocBuilder<BookBloc, BookState>(
+                          builder: (context, state) {
+                        if (state is BookLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (state is BookLoaded) {
+                          return Container(
+                            height: MediaQuery.of(context).size.height / 2,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: Colors.white,
+                            ),
+                            margin: const EdgeInsets.all(10),
+                            child: SfCartesianChart(
+                              primaryXAxis: CategoryAxis(
+                                labelStyle: const TextStyle(
+                                    color: Colors.black), // Màu chữ trục x
+                              ),
+                              primaryYAxis: NumericAxis(
+                                labelStyle: const TextStyle(
+                                    color: Colors.black), // Màu chữ trục y
+                              ),
+                              series: <ChartSeries>[
+                                StackedColumnSeries<ChartData, String>(
+                                    dataSource:
+                                        chartData(listViews, state.books),
+                                    xValueMapper: (ChartData data, _) =>
+                                        shortenText(data.x, 25),
+                                    yValueMapper: (ChartData data, _) => data.y,
+                                    color:
+                                        Theme.of(context).colorScheme.primary),
+                              ],
+                            ),
+                          );
+                        } else {
+                          return const Text("Something went wrong");
+                        }
+                      });
+                    } else {
+                      return const Text("Something went wrong");
+                    }
+                  },
+                ),
               ),
-              Text('Hoàng tử bé', style: Theme.of(context).textTheme.displaySmall,)
-            ],
-          ),
-        ),
-        Container(
-          height: MediaQuery.of(context).size.height/3,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(10),color: Colors.white,),
-          margin: const EdgeInsets.all(10),
-          child: SfCartesianChart(
-            legend: const Legend(isVisible: true, opacity: 0.7),
-            title: ChartTitle(text: 'Inflation rate'),
-            plotAreaBorderWidth: 0,
-            primaryYAxis: NumericAxis(
-                labelFormat: '{value}%',
-                axisLine: const AxisLine(width: 0),
-                majorTickLines: const MajorTickLines(size: 0)),
-            primaryXAxis: NumericAxis(
-                interval: 1,
-                majorGridLines: const MajorGridLines(width: 0),
-                edgeLabelPlacement: EdgeLabelPlacement.shift),
-            series: <ChartSeries<ChartData, int>>[
-              SplineAreaSeries<ChartData, int>(
-                dataSource: <ChartData>[
-                  ChartData(2010, 35),
-                  ChartData(2011, 13),
-                  ChartData(2012, 34),
-                  ChartData(2013, 27),
-                  ChartData(2014, 40)
-                ],
-                color: const Color.fromRGBO(75, 135, 185, 0.6),
-                borderColor: const Color.fromRGBO(75, 135, 185, 1),
-                borderWidth: 2,
-                name: 'January',
-                xValueMapper: (ChartData sales, _) => sales.x,
-                yValueMapper: (ChartData sales, _) => sales.y,
+              Expanded(
+                flex: 1,
+                child: Container(
+                  height: MediaQuery.of(context).size.height / 2,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: const Color(0xFFFDC844),
+                  ),
+                  margin: const EdgeInsets.all(10),
+                  child: BlocBuilder<ViewBloc, ViewState>(
+                    builder: (context, state) {
+                      if (state is ViewLoading) {
+                        return const Center(
+                            child: CircularProgressIndicator());
+                      }
+                      if (state is ViewLoaded) {
+                        ViewModel topBook = state.views.reduce((max, current) =>
+                            current.views > max.views ? current : max);
+                        return BlocBuilder<BookBloc, BookState>(
+                            builder: (context, state) {
+                          if (state is BookLoading) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
+                          if (state is BookLoaded) {
+                            Book? book = state.books.firstWhere(
+                              (book) => book.id == topBook.bookId,
+                            );
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Top view',
+                                  style:
+                                      Theme.of(context).textTheme.displaySmall,
+                                ),
+                                Image.network(
+                                  'https://firebasestorage.googleapis.com/v0/b/flutter-e-book-app.appspot.com/o/book_content_images%2FHoangtube%2Fimage_cover_hoangtube.jpg?alt=media&token=2c042422-675f-44b8-8f8b-052d97ae2abf',
+                                  height:
+                                      MediaQuery.of(context).size.height / 3,
+                                ),
+                                Text(
+                                  book.title,
+                                  style:
+                                      Theme.of(context).textTheme.displaySmall,
+                                ),
+                              ],
+                            );
+                          } else {
+                            return const Text("Something went wrong");
+                          }
+                        });
+                      } else {
+                        return const Text("Something went wrong");
+                      }
+                    },
+                  ),
+                ),
               ),
-              SplineAreaSeries<ChartData, int>(
-                dataSource: <ChartData>[
-                  ChartData(2010, 15),
-                  ChartData(2011, 53),
-                  ChartData(2012, 74),
-                  ChartData(2013, 17),
-                  ChartData(2014, 80)
-
-                ],
-                borderColor: const Color.fromRGBO(192, 108, 132, 1),
-                color: const Color.fromRGBO(192, 108, 132, 0.6),
-                borderWidth: 2,
-                name: 'February',
-                xValueMapper: (ChartData sales, _) => sales.x,
-                yValueMapper: (ChartData sales, _) => sales.y,
-              )
             ],
-            tooltipBehavior: TooltipBehavior(enable: true),
-          ),
-        ),
-      ],
-    );
+          )
+        : Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height / 2,
+                width: MediaQuery.of(context).size.width - 20,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: const Color(0xFFFDC844),
+                ),
+                margin: const EdgeInsets.all(10),
+                child: BlocBuilder<ViewBloc, ViewState>(
+                  builder: (context, state) {
+                    if (state is ViewLoading) {
+                      return const Center(
+                          child: CircularProgressIndicator());
+                    }
+                    if (state is ViewLoaded) {
+                      ViewModel topBook = state.views.reduce((max, current) =>
+                          current.views > max.views ? current : max);
+                      return BlocBuilder<BookBloc, BookState>(
+                          builder: (context, state) {
+                        if (state is BookLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        if (state is BookLoaded) {
+                          Book? book = state.books.firstWhere(
+                            (book) => book.id == topBook.bookId,
+                          );
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Top view',
+                                style: Theme.of(context).textTheme.displaySmall,
+                              ),
+                              Image.network(
+                                book.imageUrl,
+                                height: MediaQuery.of(context).size.height / 4,
+                              ),
+                              Text(
+                                book.title,
+                                style: Theme.of(context).textTheme.displaySmall,
+                              )
+                            ],
+                          );
+                        } else {
+                          return const Text("Something went wrong");
+                        }
+                      });
+                    } else {
+                      return const Text("Something went wrong");
+                    }
+                  },
+                ),
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height / 3,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                ),
+                margin: const EdgeInsets.all(10),
+                child: SfCartesianChart(),
+              ),
+            ],
+          );
   }
 }
 
 class ChartData {
   ChartData(this.x, this.y);
-  final int x;
-  final double? y;
+
+  final String x;
+  final int y;
 }

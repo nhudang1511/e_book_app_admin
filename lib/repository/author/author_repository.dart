@@ -17,7 +17,7 @@ class AuthorRepository extends BaseAuthorRepository {
     };
     var url = Uri.http(
       Config.apiURL,
-      '${Config.API}/admin/author/',
+      '${Config.API}/author/',
     );
     var response = await client.get(
       url,
@@ -28,7 +28,6 @@ class AuthorRepository extends BaseAuthorRepository {
       var data = jsonDecode(response.body);
       return authorsFromJson(data["data"]);
 
-      //return true;
     } else {
       return null;
     }

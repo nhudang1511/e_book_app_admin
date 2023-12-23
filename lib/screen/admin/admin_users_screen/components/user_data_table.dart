@@ -1,7 +1,9 @@
 import 'package:e_book_admin/model/models.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:e_book_admin/blocs/blocs.dart';
 
-class UserDataTable extends StatelessWidget {
+class UserDataTable extends StatefulWidget {
   const UserDataTable(
       {Key? key,
       required this.id,
@@ -14,6 +16,19 @@ class UserDataTable extends StatelessWidget {
 
   final String id, fullName, email, phone, status;
   final List<User> listUsers;
+
+  @override
+  State<StatefulWidget> createState() => _UserDataTableState();
+}
+
+class _UserDataTableState extends State<UserDataTable> {
+  late UserBloc userBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    userBloc = BlocProvider.of(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,17 +51,17 @@ class UserDataTable extends StatelessWidget {
         ),
         child: PaginatedDataTable(
           columns: [
-            DataColumn(label: Text(id)),
-            DataColumn(label: Text(fullName)),
-            DataColumn(label: Text(email)),
-            DataColumn(label: Text(phone)),
-            DataColumn(label: Text(status)),
+            DataColumn(label: Text(widget.id)),
+            DataColumn(label: Text(widget.fullName)),
+            DataColumn(label: Text(widget.email)),
+            DataColumn(label: Text(widget.phone)),
+            DataColumn(label: Text(widget.status)),
             const DataColumn(
               label: Text('Actions'),
               numeric: true,
             ),
           ],
-          source: _DataSource(listUsers),
+          source: _DataSource(widget.listUsers, userBloc, context),
           rowsPerPage: 5, // Change this to set the number of rows per page.
         ),
       ),
@@ -56,8 +71,10 @@ class UserDataTable extends StatelessWidget {
 
 class _DataSource extends DataTableSource {
   final List<User> listUsers;
+  final UserBloc userBloc;
+  final BuildContext context;
 
-  _DataSource(this.listUsers);
+  _DataSource(this.listUsers, this.userBloc, this.context);
 
   @override
   DataRow getRow(int index) {
@@ -70,7 +87,42 @@ class _DataSource extends DataTableSource {
       DataCell(Text(item.status.toString())),
       DataCell(
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: const Text(
+                    'Confirm',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  content: const Text('Are you sure you want to block?'),
+                  actions: <Widget>[
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        userBloc.add(BlockUser(item.id));
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text(
+                        'Confirm',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
           icon: const Icon(Icons.block, color: Colors.white),
         ),
       ),

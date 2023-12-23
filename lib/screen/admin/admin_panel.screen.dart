@@ -64,11 +64,11 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
                   Expanded(
                     child: TabBarView(
                       controller: _tabController,
-                      children: const [
-                        DashboardScreen(),
-                        AdminCategoriesScreen(),
+                      children: [
+                        const DashboardScreen(),
+                        const AdminCategoriesScreen(),
                         AdminBooksScreen(),
-                        AdminUsersScreen()
+                        const AdminUsersScreen()
                       ],
                     ),
                   ),

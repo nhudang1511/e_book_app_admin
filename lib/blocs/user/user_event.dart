@@ -1,4 +1,5 @@
 part of 'user_bloc.dart';
+
 abstract class UserEvent {
   const UserEvent();
 
@@ -6,13 +7,25 @@ abstract class UserEvent {
   List<Object?> get props => [];
 }
 
-class LoadUser extends UserEvent{
+class LoadUser extends UserEvent {
   @override
   List<Object?> get props => [];
 }
-class UpdateUser extends UserEvent{
+
+class UpdateUser extends UserEvent {
   final List<User> users;
+
   const UpdateUser(this.users);
+
+  @override
+  List<Object?> get props => [];
+}
+
+class BlockUser extends UserEvent {
+  final String userId;
+
+  const BlockUser(this.userId);
+
   @override
   List<Object?> get props => [];
 }

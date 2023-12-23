@@ -9,7 +9,7 @@ class CustomButton extends StatelessWidget {
   const CustomButton({
     Key? key,
     required this.buttonText,
-    this.buttonColor = const Color(0xFFB58BDB),
+    this.buttonColor = const Color(0xFF8C2EEE),
     required this.buttonTextColor,
     required this.onTap,
     this.borderRadius = 10,
@@ -47,7 +47,7 @@ class CustomButton extends StatelessWidget {
           style: TextStyle(
             fontSize: 19,
             color: buttonTextColor,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
