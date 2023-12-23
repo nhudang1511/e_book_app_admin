@@ -1,7 +1,7 @@
 
-import 'package:bloc/bloc.dart';
 import 'package:e_book_admin/repository/repositories.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../model/models.dart';
 part 'author_event.dart';
 part 'author_state.dart';

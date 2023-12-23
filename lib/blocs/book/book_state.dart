@@ -17,3 +17,10 @@ class BookLoaded extends BookState{
   @override
   List<Object?> get props => [books];
 }
+class BookAdded extends BookState {
+  final Book book;
+
+  const BookAdded({required this.book});
+  @override
+  List<Object?> get props => [book];
+}

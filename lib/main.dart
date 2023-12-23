@@ -1,4 +1,6 @@
 import 'package:e_book_admin/blocs/blocs.dart';
+import 'package:e_book_admin/config/app_route.dart';
+import 'package:e_book_admin/cubits/cubit.dart';
 import 'package:e_book_admin/repository/repositories.dart';
 import 'package:e_book_admin/screen/admin/admin_panel.screen.dart';
 import 'package:e_book_admin/screen/admin/components/menu_app_controller.dart';
@@ -40,6 +42,16 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(create: (context) => MenuAppController()),
         BlocProvider(
+          create: (_) => LoginCubit(
+            adminRepository: AdminRepository(),
+          ),
+          child: const LoginScreen(),
+        ),
+        BlocProvider(
+          create: (_) => AuthBloc(adminRepository: AdminRepository())
+            ..add(AuthEventStarted()),
+        ),
+        BlocProvider(
           create: (_) => AuthorBloc(authorRepository: AuthorRepository())
             ..add(LoadAuthors()),
         ),
@@ -52,8 +64,16 @@ class _MyAppState extends State<MyApp> {
             ..add(LoadCategory()),
         ),
         BlocProvider(
+          create: (_) => ChaptersBloc(chaptersRepository: ChaptersRepository())
+            ..add(LoadChapters()),
+        ),
+        BlocProvider(
           create: (_) => UserBloc(userRepository: UserRepository())
             ..add(LoadUser()),
+        ),
+        BlocProvider(
+          create: (_) => ViewBloc(bookRepository: BookRepository())
+            ..add(LoadView()),
         ),
       ],
       child: MaterialApp(
@@ -62,6 +82,7 @@ class _MyAppState extends State<MyApp> {
         theme: darkTheme,
         home: const LoginScreen(),
         darkTheme: darkTheme,
+        onGenerateRoute: AppRouter.onGenerateRoute,
       ),
     );
   }

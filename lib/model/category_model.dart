@@ -5,7 +5,7 @@ class Category {
   late String id;
   late String name;
   late bool status;
-  late String imageUrl;
+  late dynamic imageUrl;
 
   Category(this.id, this.name, this.status, this.imageUrl);
 
