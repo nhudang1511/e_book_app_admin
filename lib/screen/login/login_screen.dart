@@ -1,7 +1,5 @@
-import 'dart:async';
 import 'dart:ui';
 import 'package:e_book_admin/cubits/cubit.dart';
-import 'package:e_book_admin/screen/admin/admin_panel.screen.dart';
 import 'package:e_book_admin/screen/login/components/password_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,7 +23,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   late LoginCubit _loginCubit;
-  late Timer _timer;
   final loginFormKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -46,7 +43,6 @@ class _LoginScreenState extends State<LoginScreen> {
     final screenWidthValue = MediaQuery.of(context).size.width;
     return BlocListener<LoginCubit, LoginState>(
       listener: (context, state) {
-        print(state);
         if (state.status == LoginStatus.success) {
           Navigator.pushNamed(context, '/admin_panel');
         }

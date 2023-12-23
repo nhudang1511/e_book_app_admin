@@ -43,6 +43,7 @@ class _FormAddBookState extends State<FormAddBook> {
   late bool existFileImage = false;
   late bool existFileBookReview1 = false;
   late bool existFileBookReview2 = false;
+  late bool addedAllChapters = true;
 
   Future<void> _pickFileImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -131,6 +132,7 @@ class _FormAddBookState extends State<FormAddBook> {
     existFileImage = false;
     existFileBookReview1 = false;
     existFileBookReview2 = false;
+    addedAllChapters = true;
   }
 
   @override
@@ -547,6 +549,10 @@ class _FormAddBookState extends State<FormAddBook> {
                   ),
                 ],
                 if (currentStep == 2) ...addChapters,
+                addedAllChapters == false
+                    ? const Text('Please add all chapters',
+                        style: TextStyle(color: Colors.redAccent))
+                    : const Text(''),
               ],
             ),
           ),
@@ -635,7 +641,13 @@ class _FormAddBookState extends State<FormAddBook> {
           // button next
           ElevatedButton(
             onPressed: () {
-              Navigator.of(context).pop(listChapters);
+              if (listChapters.length == quantity) {
+                Navigator.of(context).pop(listChapters);
+              } else {
+                setState(() {
+                  addedAllChapters = false;
+                });
+              }
             },
             child: const Text(
               'Add',
