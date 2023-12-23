@@ -138,7 +138,7 @@ class DashBoardRow2 extends StatelessWidget {
                                       Theme.of(context).textTheme.displaySmall,
                                 ),
                                 Image.network(
-                                  'https://firebasestorage.googleapis.com/v0/b/flutter-e-book-app.appspot.com/o/book_content_images%2FHoangtube%2Fimage_cover_hoangtube.jpg?alt=media&token=2c042422-675f-44b8-8f8b-052d97ae2abf',
+                                  book.imageUrl,
                                   height:
                                       MediaQuery.of(context).size.height / 3,
                                 ),
