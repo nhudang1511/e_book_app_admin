@@ -153,6 +153,7 @@ class _FormAddBookState extends State<FormAddBook> {
                           Map<String, String>? chapterData =
                               await showDialog<Map<String, String>>(
                             context: context,
+                            barrierDismissible: false,
                             builder: (BuildContext context) {
                               return const FormAddChapter();
                             },
