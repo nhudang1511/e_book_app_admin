@@ -21,6 +21,11 @@ class _AdminBooksScreenState extends State<AdminBooksScreen> {
   late ViewBloc viewBloc;
   late Book? newBook;
   late Map<String, String>? listChapter;
+  late bool _isLoading = false;
+
+  Future<void> yourAsyncFunction() async {
+    await Future.delayed(const Duration(seconds: 2));
+  }
 
   @override
   void initState() {
@@ -30,6 +35,7 @@ class _AdminBooksScreenState extends State<AdminBooksScreen> {
     authorBloc = BlocProvider.of(context);
     viewBloc = BlocProvider.of(context);
     newBook = null;
+    _isLoading = false;
   }
 
   @override
@@ -97,6 +103,10 @@ class _AdminBooksScreenState extends State<AdminBooksScreen> {
                                             );
                                             if (newBook != null) {
                                               setState(() {
+                                                _isLoading = true;
+                                              });
+
+                                              try {
                                                 if (listChapter == null) {
                                                   bookBloc.add(
                                                       RemoveBook(newBook!.id));
@@ -104,8 +114,15 @@ class _AdminBooksScreenState extends State<AdminBooksScreen> {
                                                   chaptersBloc.add(AddChapters(
                                                       newBook!.id,
                                                       listChapter!));
+                                                  await yourAsyncFunction();
                                                 }
-                                              });
+                                              } finally {
+                                                setState(() {
+                                                  _isLoading = false;
+                                                  newBook = null;
+                                                  bookBloc.add(LoadBooks());
+                                                });
+                                              }
                                             }
                                           },
                                           child: const Text(
@@ -115,16 +132,25 @@ class _AdminBooksScreenState extends State<AdminBooksScreen> {
                                           ),
                                         ),
                                       ),
-                                      Container(
-                                        padding: const EdgeInsets.only(
-                                            right: 30, top: 20),
-                                        child: IconButton(
-                                          onPressed: () {
-                                            bookBloc.add(LoadBooks());
-                                          },
-                                          icon: const Icon(Icons.refresh),
-                                        ),
-                                      ),
+                                      _isLoading == true
+                                          ? Container(
+                                              padding: const EdgeInsets.only(
+                                                  right: 30, top: 20),
+                                              child: const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                            )
+                                          : Container(
+                                              padding: const EdgeInsets.only(
+                                                  right: 30, top: 20),
+                                              child: IconButton(
+                                                onPressed: () {
+                                                  bookBloc.add(LoadBooks());
+                                                },
+                                                icon: const Icon(Icons.refresh),
+                                              ),
+                                            ),
                                     ],
                                   ),
                                   BookDataTable(
