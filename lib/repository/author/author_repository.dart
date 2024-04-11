@@ -15,7 +15,7 @@ class AuthorRepository extends BaseAuthorRepository {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
-    var url = Uri.http(
+    var url = Uri.https(
       Config.apiURL,
       '${Config.API}/author/',
     );

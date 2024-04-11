@@ -7,7 +7,8 @@ class SliderMenu extends StatelessWidget {
     super.key,
     required TabController tabController,
     required int selectedTabIndex,
-  }) : _tabController = tabController, _selectedTabIndex = selectedTabIndex;
+  })  : _tabController = tabController,
+        _selectedTabIndex = selectedTabIndex;
 
   final TabController _tabController;
   final int _selectedTabIndex;
@@ -15,7 +16,7 @@ class SliderMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: const Color(0xFF601DB2),
+      backgroundColor: Theme.of(context).colorScheme.onBackground,
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -38,7 +39,7 @@ class SliderMenu extends StatelessWidget {
             ),
             DrawerListTile(
               title: 'Books',
-              icons: Icons.library_books_rounded,
+              icons: Icons.menu_book_sharp,
               press: () {
                 _tabController.animateTo(2);
               },
@@ -52,8 +53,14 @@ class SliderMenu extends StatelessWidget {
               },
               isSelected: _selectedTabIndex == 3, // Kiểm tra tab hiện tại
             ),
-            if(!Responsive.isDesktop(context))
-              TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close', style: TextStyle(color: Colors.white),))
+            if (!Responsive.isDesktop(context))
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  'Close',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+              ),
           ],
         ),
       ),
@@ -77,15 +84,25 @@ class DrawerListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      onTap: (){
+      onTap: () {
         press();
         Navigator.of(context).pop();
       },
       horizontalTitleGap: 0.0,
-      leading: Icon(icons, color: isSelected ? Colors.white : Colors.white54), // Thay đổi màu dựa trên trạng thái chọn
+      leading: Icon(
+        icons,
+        color: isSelected
+            ? Theme.of(context).colorScheme.secondaryContainer
+            : Colors.black,
+      ),
+      // Thay đổi màu dựa trên trạng thái chọn
       title: Text(
         title,
-        style: TextStyle(color: isSelected ? Colors.white : Colors.white54), // Thay đổi màu dựa trên trạng thái chọn
+        style: Theme.of(context).textTheme.titleLarge!.copyWith(
+              color: isSelected
+                  ? Theme.of(context).colorScheme.secondaryContainer
+                  : Colors.black,
+            ), // Thay đổi màu dựa trên trạng thái chọn
       ),
     );
   }

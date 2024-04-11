@@ -41,6 +41,9 @@ class LoginCubit extends Cubit<LoginState> {
         state.email,
         state.password,
       );
+      emit(
+        state.copyWith(email: '', password: ''),
+      );
       if (credential == true) {
         emit(state.copyWith(status: LoginStatus.success));
       } else {
@@ -50,5 +53,4 @@ class LoginCubit extends Cubit<LoginState> {
       emit(state.copyWith(status: LoginStatus.error));
     }
   }
-
 }

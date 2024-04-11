@@ -4,7 +4,6 @@ class CustomButton extends StatelessWidget {
   final Color buttonColor;
   final Color buttonTextColor;
   final VoidCallback onTap;
-  final double borderRadius;
   final Color? borderSideColor;
   const CustomButton({
     Key? key,
@@ -12,7 +11,6 @@ class CustomButton extends StatelessWidget {
     this.buttonColor = const Color(0xFF8C2EEE),
     required this.buttonTextColor,
     required this.onTap,
-    this.borderRadius = 10,
     this.borderSideColor = Colors.transparent,
   }) : super(key: key);
 
@@ -34,7 +32,7 @@ class CustomButton extends StatelessWidget {
           ),
           shape: MaterialStatePropertyAll(
             RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(borderRadius),
+              borderRadius: BorderRadius.circular(4),
               side: BorderSide(
                 color: borderSideColor!,
                 width: 1,

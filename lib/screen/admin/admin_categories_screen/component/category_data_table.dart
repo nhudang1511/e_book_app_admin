@@ -35,17 +35,19 @@ class _CategoryDataTableState extends State<CategoryDataTable> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       child: Theme(
         data: Theme.of(context).copyWith(
-          cardColor: const Color(0xFF1B2063),
+          cardColor: Theme.of(context).colorScheme.background,
           //cardTheme: CardTheme(shape: Border.all(color: Colors.white, width: 2)),
-          dividerColor: Colors.white,
-          dataTableTheme: const DataTableThemeData(
-            dataTextStyle: TextStyle(color: Colors.white),
-            headingTextStyle: TextStyle(color: Colors.white),
+          dividerColor: Theme.of(context).colorScheme.secondary,
+          dataTableTheme: DataTableThemeData(
+            dataTextStyle: Theme.of(context).textTheme.titleLarge,
+            headingTextStyle: Theme.of(context).textTheme.headlineMedium,
           ),
-          iconTheme: const IconThemeData(
-            color: Colors.white,
+          iconTheme: IconThemeData(
+            color: Theme.of(context).colorScheme.secondaryContainer,
           ),
-          textTheme: const TextTheme(bodySmall: TextStyle(color: Colors.white)),
+          textTheme: const TextTheme(
+            bodySmall: TextStyle(color: Colors.black),
+          ),
         ),
         child: PaginatedDataTable(
           columns: [
@@ -80,7 +82,7 @@ class _DataSource extends DataTableSource {
     final item = listCategories[index];
     return DataRow(
       cells: [
-        DataCell(Text(item.id)),
+        DataCell(SelectableText(item.id)),
         DataCell(Text(item.name)),
         DataCell(
           Row(
@@ -96,7 +98,7 @@ class _DataSource extends DataTableSource {
                     },
                   );
                 },
-                icon: const Icon(Icons.edit, color: Colors.white),
+                icon: const Icon(Icons.edit),
               ),
               IconButton(
                 onPressed: () {
@@ -136,7 +138,7 @@ class _DataSource extends DataTableSource {
                     },
                   );
                 },
-                icon: const Icon(Icons.delete, color: Colors.white),
+                icon: const Icon(Icons.delete),
               )
             ],
           ),

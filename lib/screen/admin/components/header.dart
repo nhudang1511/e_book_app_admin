@@ -16,7 +16,7 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFF601DB2),
+      color: Theme.of(context).colorScheme.background,
       padding: const EdgeInsets.all(15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -26,14 +26,10 @@ class Header extends StatelessWidget {
               onPressed: context.read<MenuAppController>().controlMenu,
               icon: const Icon(
                 Icons.menu,
-                color: Colors.white,
               )),
           Text(
             title,
-            style: Theme.of(context)
-                .textTheme
-                .displayMedium!
-                .copyWith(color: Colors.white),
+            style: Theme.of(context).textTheme.displayMedium,
           ),
           const ProfileCard()
         ],
@@ -43,17 +39,15 @@ class Header extends StatelessWidget {
 }
 
 class ProfileCard extends StatefulWidget {
-
   const ProfileCard({
     super.key,
   });
 
   @override
   State<StatefulWidget> createState() => _ProfileCardState();
-
-
 }
-class _ProfileCardState extends State<ProfileCard>{
+
+class _ProfileCardState extends State<ProfileCard> {
   late AuthBloc _authBloc;
 
   @override
@@ -61,6 +55,7 @@ class _ProfileCardState extends State<ProfileCard>{
     super.initState();
     _authBloc = BlocProvider.of<AuthBloc>(context);
   }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthBloc, AuthState>(
@@ -73,67 +68,73 @@ class _ProfileCardState extends State<ProfileCard>{
         if (state is AuthenticateState) {
           return Row(
             children: [
-              Container(
-                  decoration: const BoxDecoration(
-                      shape: BoxShape.circle, color: Colors.white),
-                  child: Icon(Icons.person, color: Theme.of(context).colorScheme.primary,)),
-              const SizedBox(
-                width: 10,
-              ),
-              if (!Responsive.isMobile(context))
-                Text(
-                  state.authUser!.fullName,
-                  style: const TextStyle(color: Colors.white),
-                ),
               PopupMenuButton(
                   offset: const Offset(0, 60),
                   // SET THE (X,Y) POSITION
-                  iconSize: 30,
-                  color: const Color(0xFF601DB2),
-                  icon: const Icon(
-                    Icons.keyboard_arrow_down, // CHOOSE YOUR CUSTOM ICON
-                    color: Colors.white,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 8,
+                      horizontal: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
+                    child: Icon(
+                      Icons.person,
+                      color: Theme.of(context).colorScheme.background,
+                      size: 28,
+                    ),
+
                   ),
                   itemBuilder: (context) {
                     return [
                       PopupMenuItem(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(state.authUser!.fullName,
-                                  style: const TextStyle(color: Colors.white)),
-                              Text(
-                                state.authUser!.email,
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                              const Divider(
-                                color: Colors.white,
-                                height: 5,
-                              )
-                            ],
-                          )),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              state.authUser!.fullName,
+                              style: Theme.of(context).textTheme.headlineSmall,
+                            ),
+                            const SizedBox(
+                              height: 8,
+                            ),
+                            Text(
+                              state.authUser!.email,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
+                            Divider(
+                              color: Theme.of(context).colorScheme.secondary,
+                              height: 5,
+                            ),
+                          ],
+                        ),
+                      ),
                       PopupMenuItem(
                           value: 'Option 1',
-                          onTap: (){
+                          onTap: () {
                             _authBloc.add(AuthEventLoggedOut());
-                            Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, '/login', (route) => false);
                           },
-                          child: const Column(
+                          child: Column(
                             children: [
-                              SizedBox(height: 5),
+                              const SizedBox(height: 5),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Icon(
+                                  const Icon(
                                     Icons.logout_outlined,
-                                    color: Colors.white,
+                                    color: Colors.black,
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 10,
                                   ),
                                   Text(
                                     'Logout',
-                                    style: TextStyle(color: Colors.white),
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
                                   )
                                 ],
                               ),

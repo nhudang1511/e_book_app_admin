@@ -14,15 +14,15 @@ class AdminRepository extends BaseAdminRepository {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
     };
-    var url = Uri.http(Config.apiURL, '${Config.API}/admin/login', {
-      'email': email,
-      'passWord': passWord,
-    });
+    var url = Uri.https(Config.apiURL, '${Config.API}/admin/login');
     var response = await client.post(
       url,
       headers: requestHeaders,
+      body: jsonEncode({
+        'email': email,
+        'password': passWord,
+      }),
     );
-
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       html.window.localStorage['token'] = data['token'];
@@ -39,7 +39,7 @@ class AdminRepository extends BaseAdminRepository {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
-    var url = Uri.http(
+    var url = Uri.https(
       Config.apiURL,
       '${Config.API}/admin/profile/',
     );
