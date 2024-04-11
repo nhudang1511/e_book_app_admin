@@ -16,7 +16,7 @@ class CategoryRepository extends BaseCategoryRepository {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
-    var url = Uri.http(
+    var url = Uri.https(
       Config.apiURL,
       '${Config.API}/category',
     );
@@ -35,7 +35,7 @@ class CategoryRepository extends BaseCategoryRepository {
 
   @override
   Future<Category?> addCategory(String name, PlatformFile image) async {
-    var url = Uri.http(Config.apiURL, '${Config.API}/category/add');
+    var url = Uri.https(Config.apiURL, '${Config.API}/category/add');
     var request = http.MultipartRequest('POST', url);
     request.fields['name'] = name;
     request.fields['status'] = 'true';
@@ -65,7 +65,7 @@ class CategoryRepository extends BaseCategoryRepository {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
-    var url = Uri.http(Config.apiURL, '${Config.API}/category/delete/', {
+    var url = Uri.https(Config.apiURL, '${Config.API}/category/delete/', {
       'categoryId': categoryId,
     });
     var response = await client.put(
@@ -83,7 +83,7 @@ class CategoryRepository extends BaseCategoryRepository {
   @override
   Future<bool> updateCategory(
       String categoryId, String name, PlatformFile? image) async {
-    var url = Uri.http(Config.apiURL, '${Config.API}/category/update/', {
+    var url = Uri.https(Config.apiURL, '${Config.API}/category/update/', {
       'categoryId': categoryId,
     });
     var request = http.MultipartRequest('PUT', url);

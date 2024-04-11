@@ -78,7 +78,8 @@ class _AdminBooksScreenState extends State<AdminBooksScreen> {
                       if (state is ChaptersLoaded) {
                         return SafeArea(
                           child: Drawer(
-                            backgroundColor: const Color(0xFF1B2063),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.onBackground,
                             child: SingleChildScrollView(
                               child: Column(
                                 children: [

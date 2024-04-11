@@ -9,7 +9,7 @@ class AdminCategoriesScreen extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() => _AdminCategoriesScreenState();
-  }
+}
 
 class _AdminCategoriesScreenState extends State<AdminCategoriesScreen> {
   late BookBloc bookBloc;
@@ -17,8 +17,6 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen> {
   @override
   void initState() {
     super.initState();
-
-
   }
 
   @override
@@ -30,7 +28,7 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen> {
       if (state is CategoryLoaded) {
         return SafeArea(
             child: Drawer(
-          backgroundColor: const Color(0xFF1B2063),
+          backgroundColor: Theme.of(context).colorScheme.onBackground,
           child: SingleChildScrollView(
             child: Column(
               children: [
@@ -54,5 +52,4 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen> {
       }
     });
   }
-
 }

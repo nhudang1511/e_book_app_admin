@@ -79,7 +79,7 @@ class _MyAppState extends State<MyApp> {
       child: MaterialApp(
         title: 'E Book App Admin',
         debugShowCheckedModeBanner: false,
-        theme: darkTheme,
+        theme: lightTheme,
         home: const LoginScreen(),
         darkTheme: darkTheme,
         onGenerateRoute: AppRouter.onGenerateRoute,

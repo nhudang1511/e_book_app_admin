@@ -16,7 +16,7 @@ class AdminUsersScreen extends StatelessWidget {
       if (state is UserLoaded) {
         return SafeArea(
             child: Drawer(
-          backgroundColor: const Color(0xFF1B2063),
+          backgroundColor: Theme.of(context).colorScheme.onBackground,
           child: SingleChildScrollView(
             child: Column(
               children: [

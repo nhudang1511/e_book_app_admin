@@ -12,7 +12,7 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Drawer(
-        backgroundColor: const Color(0xFF1B2063),
+        backgroundColor: Theme.of(context).colorScheme.onBackground,
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -121,8 +121,9 @@ class TotalItems extends StatelessWidget {
       height: 50,
       margin: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          color: const Color(0x59787ECF)),
+        borderRadius: BorderRadius.circular(30),
+        color: Theme.of(context).colorScheme.primary,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

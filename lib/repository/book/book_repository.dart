@@ -16,7 +16,7 @@ class BookRepository extends BaseBookRepository {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
-    var url = Uri.http(
+    var url = Uri.https(
       Config.apiURL,
       '${Config.API}/book',
     );
@@ -39,7 +39,7 @@ class BookRepository extends BaseBookRepository {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
-    var url = Uri.http(
+    var url = Uri.https(
       Config.apiURL,
       '${Config.API}/book/viewBooks',
     );
@@ -68,7 +68,7 @@ class BookRepository extends BaseBookRepository {
     int chapters,
     String country,
   ) async {
-    var url = Uri.http(Config.apiURL, '${Config.API}/book/add');
+    var url = Uri.https(Config.apiURL, '${Config.API}/book/add');
     var request = http.MultipartRequest('POST', url);
 
     // Thêm các trường thông tin sách vào fields
@@ -124,7 +124,7 @@ class BookRepository extends BaseBookRepository {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
-    var url = Uri.http(
+    var url = Uri.https(
         Config.apiURL, '${Config.API}/book/delete/', {'bookId': bookId});
     var response = await client.put(
       url,
@@ -144,7 +144,7 @@ class BookRepository extends BaseBookRepository {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
-    var url = Uri.http(
+    var url = Uri.https(
         Config.apiURL, '${Config.API}/book/remove/', {'bookId': bookId});
     var response = await client.delete(
       url,

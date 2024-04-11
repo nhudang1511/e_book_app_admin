@@ -1,10 +1,10 @@
 import 'dart:ui';
 import 'package:e_book_admin/cubits/cubit.dart';
-import 'package:e_book_admin/screen/login/components/password_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lottie/lottie.dart';
 import 'components/custom_button.dart';
-import 'components/custom_textfield.dart';
+import 'components/custom_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = "/login";
@@ -26,6 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final loginFormKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool _passwordVisible = true;
   double screenWidthValue = 0;
   late bool statusLogin = true;
   var screenHeight =
@@ -46,6 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (state.status == LoginStatus.success) {
           Navigator.pushNamed(context, '/admin_panel');
         }
+        if (state.status == LoginStatus.submitting) {}
         if (state.status == LoginStatus.error) {
           setState(() {
             statusLogin = false;
@@ -53,6 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       },
       child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.onBackground,
         body: SingleChildScrollView(
           child: Form(
             key: loginFormKey,
@@ -65,8 +68,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(
                       height: 100,
                     ),
-                    Image.asset(
-                      'assets/image/login_page_logo.png',
+                    LottieBuilder.asset(
+                      "assets/lottie/login.json",
                       height: screenWidthValue * 0.4,
                       width: screenWidthValue * 0.4,
                     ),
@@ -81,81 +84,102 @@ class _LoginScreenState extends State<LoginScreen> {
                         height: 100,
                       ),
                       Center(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: BackdropFilter(
-                            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                            child: Container(
-                              height: 400,
-                              width: 450,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20, vertical: 20),
-                                child: Column(
+                        child: Container(
+                          height: 400,
+                          width: 450,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.1),
+                                // Shadow color
+                                spreadRadius: 5,
+                                // Spread radius
+                                blurRadius: 7,
+                                // Blur radius
+                                offset: const Offset(0, 3),
+                              )
+                            ],
+                            color: Theme.of(context).colorScheme.background,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 32),
+                            child: Column(
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(
+                                  "Login",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .displayLarge,
+                                ),
+                                CustomTextField(
+                                  label: "Email",
+                                  controller: emailController,
+                                  onChanged: (value) {
+                                    _loginCubit.emailChanged(value);
+                                  },
+                                  validator: (input) {
+                                    if (input.toString().isEmpty) {
+                                      return 'Enter email';
+                                    }
+                                  },
+                                  // validator: validateEmail,
+                                ),
+                                CustomTextField(
+                                  label: 'Password',
+                                  controller: passwordController,
+                                  onChanged: (value) {
+                                    _loginCubit.passwordChanged(value);
+                                  },
+                                  isObscureText: _passwordVisible,
+                                  suffixIcon: _passwordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  onSuffixIcon: () {
+                                    setState(() {
+                                      _passwordVisible = !_passwordVisible;
+                                    });
+                                  },
+                                ),
+                                statusLogin == false
+                                    ? const Text(
+                                        'Invalid account or password!',
+                                        style: TextStyle(
+                                            color: Colors.redAccent,
+                                            fontSize: 16),
+                                      )
+                                    : const Text(''),
+                                Row(
                                   mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                      MainAxisAlignment.center,
                                   children: [
-                                    const Text(
-                                      "Login",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 32,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    CustomTextField(
-                                      hintText: "Email",
-                                      controller: emailController,
-                                      onChanged: (value) {
-                                        _loginCubit.emailChanged(value);
-                                      },
-                                      // validator: validateEmail,
-                                    ),
-                                    PasswordInput(
-                                      controller: passwordController,
-                                      hint: 'Password',
-                                      onChanged: (value) {
-                                        _loginCubit.passwordChanged(value);
-                                      },
-                                    ),
-                                    const SizedBox(
-                                      height: 10,
-                                    ),
-                                    statusLogin == false
-                                        ? const Text(
-                                            'Invalid account or password!', style: TextStyle(color: Colors.redAccent, fontSize: 16),)
-                                        : const Text(''),
                                     BlocBuilder<LoginCubit, LoginState>(
                                       buildWhen: (previous, current) =>
                                           previous.status != current.status,
                                       builder: (context, state) {
-                                        return state.status ==
-                                                LoginStatus.submitting
-                                            ? const CircularProgressIndicator()
-                                            : CustomButton(
-                                                buttonText: "Login",
-                                                buttonTextColor: Colors.white,
-                                                borderRadius:
-                                                    screenHeight / 20.0667,
-                                                onTap: () {
-                                                  setState(() {
-                                                    statusLogin = true;
-                                                  });
-                                                  if (loginFormKey.currentState!
-                                                      .validate()) {
-                                                    _loginCubit.logIn();
-                                                  }
-                                                },
-                                              );
+                                        return Expanded(
+                                          child: CustomButton(
+                                            buttonText: "Login",
+                                            buttonTextColor: Colors.white,
+                                            onTap: () {
+                                              setState(() {
+                                                statusLogin = true;
+                                              });
+                                              if (loginFormKey.currentState!
+                                                  .validate()) {
+                                                _loginCubit.logIn();
+                                              }
+                                            },
+                                          ),
+                                        );
                                       },
                                     ),
                                   ],
                                 ),
-                              ),
+                              ],
                             ),
                           ),
                         ),

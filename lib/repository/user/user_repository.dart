@@ -15,7 +15,7 @@ class UserRepository extends BaseUserRepository {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
-    var url = Uri.http(
+    var url = Uri.https(
       Config.apiURL,
       '${Config.API}/user',
     );
@@ -41,7 +41,7 @@ class UserRepository extends BaseUserRepository {
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
     var url =
-        Uri.http(Config.apiURL, '${Config.API}/user/block/', {'userId': userId});
+        Uri.https(Config.apiURL, '${Config.API}/user/block/', {'userId': userId});
     var response = await client.put(
       url,
       headers: requestHeaders,

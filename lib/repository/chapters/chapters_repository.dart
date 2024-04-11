@@ -15,7 +15,7 @@ class ChaptersRepository extends BaseChaptersRepository {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
-    var url = Uri.http(
+    var url = Uri.https(
       Config.apiURL,
       '${Config.API}/chapters',
     );
@@ -38,7 +38,7 @@ class ChaptersRepository extends BaseChaptersRepository {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer ${html.window.localStorage['token']}',
     };
-    var url = Uri.http(Config.apiURL, '${Config.API}/chapters/add/');
+    var url = Uri.https(Config.apiURL, '${Config.API}/chapters/add/');
     var response = await client.post(
       url,
       headers: requestHeaders,
