@@ -1,4 +1,5 @@
 import 'package:e_book_admin/blocs/blocs.dart';
+import 'package:e_book_admin/screen/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -61,7 +62,7 @@ class _ProfileCardState extends State<ProfileCard> {
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is UnAuthenticateState || state is AuthInitial) {
-          Navigator.pushNamed(context, "/login");
+          Navigator.pushNamed(context, LoginScreen.routeName);
         }
       },
       builder: (context, state) {
@@ -116,7 +117,7 @@ class _ProfileCardState extends State<ProfileCard> {
                           onTap: () {
                             _authBloc.add(AuthEventLoggedOut());
                             Navigator.pushNamedAndRemoveUntil(
-                                context, '/login', (route) => false);
+                                context, LoginScreen.routeName, (route) => false);
                           },
                           child: Column(
                             children: [

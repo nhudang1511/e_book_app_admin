@@ -7,14 +7,13 @@ class UserDataTable extends StatefulWidget {
   const UserDataTable(
       {Key? key,
       required this.id,
-      required this.fullName,
+      required this.displayName,
       required this.listUsers,
       required this.email,
-      required this.phone,
       required this.status})
       : super(key: key);
 
-  final String id, fullName, email, phone, status;
+  final String id, displayName, email, status;
   final List<User> listUsers;
 
   @override
@@ -54,9 +53,8 @@ class _UserDataTableState extends State<UserDataTable> {
         child: PaginatedDataTable(
           columns: [
             DataColumn(label: Text(widget.id)),
-            DataColumn(label: Text(widget.fullName)),
+            DataColumn(label: Text(widget.displayName)),
             DataColumn(label: Text(widget.email)),
-            DataColumn(label: Text(widget.phone)),
             DataColumn(label: Text(widget.status)),
             const DataColumn(
               label: Text('Enable'),
@@ -83,9 +81,8 @@ class _DataSource extends DataTableSource {
     final item = listUsers[index];
     return DataRow(cells: [
       DataCell(Text(item.id)),
-      DataCell(Text(item.fullName)),
+      DataCell(Text(item.displayName!= null ? item.displayName! : "Null")),
       DataCell(Text(item.email)),
-      DataCell(Text(item.phoneNumber)),
       DataCell(Text(item.status.toString())),
       DataCell(
         IconButton(

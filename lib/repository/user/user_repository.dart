@@ -27,8 +27,6 @@ class UserRepository extends BaseUserRepository {
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
       return usersFromJson(data["data"]);
-
-      //return true;
     } else {
       return null;
     }
