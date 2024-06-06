@@ -27,7 +27,6 @@ class AdminRepository extends BaseAdminRepository {
       var data = jsonDecode(response.body);
       html.window.localStorage['token'] = data['token'];
       return true;
-
     } else {
       return false;
     }

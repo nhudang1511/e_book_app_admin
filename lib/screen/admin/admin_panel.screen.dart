@@ -12,11 +12,6 @@ class AdminPanel extends StatefulWidget {
   const AdminPanel({super.key});
 
   static const String routeName = '/admin_panel';
-  static Route route() {
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => const AdminPanel());
-  }
 
   @override
   State<AdminPanel> createState() => _AdminPanelState();
@@ -51,12 +46,6 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
       body: SafeArea(
         child: Row(
           children: [
-            // if(Responsive.isDesktop(context))
-            //  Expanded(
-            //   child: SliderMenu(
-            //       tabController: _tabController,
-            //       selectedTabIndex: _selectedTabIndex),
-            //  ),
             Expanded(
               flex: 4,
               child: Column(

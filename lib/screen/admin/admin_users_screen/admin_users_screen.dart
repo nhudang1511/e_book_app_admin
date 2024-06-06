@@ -25,12 +25,11 @@ class AdminUsersScreen extends StatelessWidget {
                 ),
                 UserDataTable(
                   id: 'User ID',
-                  fullName: 'Full name',
+                  displayName: 'Full name',
                   email: 'Email',
-                  phone: 'Phone number',
                   status: 'Status',
                   listUsers: state.users
-                    ..sort((a, b) => a.fullName.compareTo(b.fullName)),
+                    ..sort((a, b) => (a.displayName ?? 'Null').compareTo(b.displayName ?? 'Null')),
                 )
               ],
             ),

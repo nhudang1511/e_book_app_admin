@@ -1,5 +1,6 @@
-import 'dart:ui';
 import 'package:e_book_admin/cubits/cubit.dart';
+import 'package:e_book_admin/screen/screen.dart';
+import 'package:e_book_admin/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
@@ -10,12 +11,6 @@ class LoginScreen extends StatefulWidget {
   static const String routeName = "/login";
 
   const LoginScreen({super.key});
-
-  static Route route() {
-    return MaterialPageRoute(
-        settings: const RouteSettings(name: routeName),
-        builder: (_) => const LoginScreen());
-  }
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -28,10 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   bool _passwordVisible = true;
   double screenWidthValue = 0;
-  late bool statusLogin = true;
-  var screenHeight =
-      PlatformDispatcher.instance.views.first.physicalSize.height /
-          PlatformDispatcher.instance.views.first.devicePixelRatio;
 
   @override
   void initState() {
@@ -45,13 +36,14 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocListener<LoginCubit, LoginState>(
       listener: (context, state) {
         if (state.status == LoginStatus.success) {
-          Navigator.pushNamed(context, '/admin_panel');
+          Navigator.of(context).pushReplacementNamed(AdminPanel.routeName);
         }
-        if (state.status == LoginStatus.submitting) {}
-        if (state.status == LoginStatus.error) {
-          setState(() {
-            statusLogin = false;
-          });
+        if (state.status == LoginStatus.submitting) {
+          LoadingOverlay.showLoading(context);
+          LoadingOverlay.dismissLoading();
+        }
+        if (state.status == LoginStatus.error) {}
+        if (state.status != LoginStatus.submitting) {
         }
       },
       child: Scaffold(
@@ -106,17 +98,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 32),
                             child: Column(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceEvenly,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 Text(
                                   "Login",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displayLarge,
+                                  style:
+                                      Theme.of(context).textTheme.displayLarge,
                                 ),
                                 CustomTextField(
                                   label: "Email",
+                                  icon: Icons.email,
                                   controller: emailController,
                                   onChanged: (value) {
                                     _loginCubit.emailChanged(value);
@@ -125,11 +116,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                     if (input.toString().isEmpty) {
                                       return 'Enter email';
                                     }
+                                    return null;
                                   },
                                   // validator: validateEmail,
                                 ),
                                 CustomTextField(
                                   label: 'Password',
+                                  icon: Icons.lock,
                                   controller: passwordController,
                                   onChanged: (value) {
                                     _loginCubit.passwordChanged(value);
@@ -144,38 +137,20 @@ class _LoginScreenState extends State<LoginScreen> {
                                     });
                                   },
                                 ),
-                                statusLogin == false
-                                    ? const Text(
-                                        'Invalid account or password!',
-                                        style: TextStyle(
-                                            color: Colors.redAccent,
-                                            fontSize: 16),
-                                      )
-                                    : const Text(''),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    BlocBuilder<LoginCubit, LoginState>(
-                                      buildWhen: (previous, current) =>
-                                          previous.status != current.status,
-                                      builder: (context, state) {
-                                        return Expanded(
-                                          child: CustomButton(
-                                            buttonText: "Login",
-                                            buttonTextColor: Colors.white,
-                                            onTap: () {
-                                              setState(() {
-                                                statusLogin = true;
-                                              });
-                                              if (loginFormKey.currentState!
-                                                  .validate()) {
-                                                _loginCubit.logIn();
-                                              }
-                                            },
-                                          ),
-                                        );
-                                      },
+                                    Expanded(
+                                      child: CustomButton(
+                                        buttonText: "Login",
+                                        buttonTextColor: Colors.white,
+                                        onTap: () {
+                                          if (loginFormKey.currentState!
+                                              .validate()) {
+                                            _loginCubit.logIn();
+                                          }
+                                        },
+                                      ),
                                     ),
                                   ],
                                 ),
