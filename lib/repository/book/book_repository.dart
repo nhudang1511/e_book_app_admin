@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:html' as html;
 import 'package:e_book_admin/model/models.dart';
 import 'package:e_book_admin/utils/utils.dart';
 import 'package:file_picker/src/platform_file.dart';
 
+import '../../config/share_preferences.dart';
 import 'base_book_repository.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,7 +14,7 @@ class BookRepository extends BaseBookRepository {
   Future<List<Book>?> getAllBook() async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${html.window.localStorage['token']}',
+      'Authorization': 'Bearer ${SharedService.getToken()}',
     };
     var url = Uri.https(
       Config.apiURL,
@@ -27,7 +27,7 @@ class BookRepository extends BaseBookRepository {
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      return booksFromJson(data["data"]);
+      return booksFromJson(data["responseData"]);
     } else {
       return null;
     }
@@ -37,7 +37,7 @@ class BookRepository extends BaseBookRepository {
   Future<List<ViewModel>?> getViewBooks() async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${html.window.localStorage['token']}',
+      'Authorization': 'Bearer ${SharedService.getToken()}',
     };
     var url = Uri.https(
       Config.apiURL,
@@ -50,7 +50,7 @@ class BookRepository extends BaseBookRepository {
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      return viewsFromJson(data["data"]);
+      return viewsFromJson(data["responseData"]);
     } else {
       return null;
     }
@@ -101,7 +101,7 @@ class BookRepository extends BaseBookRepository {
 
     // Thêm header Authorization
     request.headers['Authorization'] =
-        'Bearer ${html.window.localStorage['token']}';
+        'Bearer ${SharedService.getToken()}';
 
     // Thêm header Content-Type
     request.headers['Content-Type'] = 'multipart/form-data';
@@ -112,7 +112,7 @@ class BookRepository extends BaseBookRepository {
 
     if (multipartResponseData.statusCode == 201) {
       var responseData = jsonDecode(multipartResponseData.body);
-      return Book.fromJson(responseData['data']);
+      return Book.fromJson(responseData['responseData']);
     } else {
       return null;
     }
@@ -122,7 +122,7 @@ class BookRepository extends BaseBookRepository {
   Future<bool> deleteBook(String bookId) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${html.window.localStorage['token']}',
+      'Authorization': 'Bearer ${SharedService.getToken()}',
     };
     var url = Uri.https(
         Config.apiURL, '${Config.API}/book/delete/', {'bookId': bookId});
@@ -142,7 +142,7 @@ class BookRepository extends BaseBookRepository {
   Future<bool> removeBook(String bookId) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${html.window.localStorage['token']}',
+      'Authorization': 'Bearer ${SharedService.getToken()}',
     };
     var url = Uri.https(
         Config.apiURL, '${Config.API}/book/remove/', {'bookId': bookId});

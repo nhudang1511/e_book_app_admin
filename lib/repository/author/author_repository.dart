@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'dart:html' as html;
+import 'package:e_book_admin/config/share_preferences.dart';
 import 'package:e_book_admin/model/models.dart';
 import 'package:e_book_admin/utils/utils.dart';
 
@@ -13,7 +13,7 @@ class AuthorRepository extends BaseAuthorRepository {
   Future<List<Author>?> getAllAuthor() async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${html.window.localStorage['token']}',
+      'Authorization': 'Bearer ${SharedService.getToken()}',
     };
     var url = Uri.https(
       Config.apiURL,
@@ -26,7 +26,7 @@ class AuthorRepository extends BaseAuthorRepository {
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      return authorsFromJson(data["data"]);
+      return authorsFromJson(data["responseData"]);
 
     } else {
       return null;

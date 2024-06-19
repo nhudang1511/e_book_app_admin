@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'dart:html' as html;
+import 'package:e_book_admin/config/share_preferences.dart';
 import 'package:e_book_admin/model/models.dart';
+import 'package:e_book_admin/providers/providers.dart';
 import 'package:e_book_admin/utils/utils.dart';
 
 import 'base_admin_repository.dart';
@@ -25,7 +26,7 @@ class AdminRepository extends BaseAdminRepository {
     );
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      html.window.localStorage['token'] = data['token'];
+      SharedService.setToken(data['responseData']['token']);
       return true;
     } else {
       return false;
@@ -34,29 +35,59 @@ class AdminRepository extends BaseAdminRepository {
 
   @override
   Future<Admin?> getProfile() async {
-    Map<String, String> requestHeaders = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${html.window.localStorage['token']}',
-    };
-    var url = Uri.https(
-      Config.apiURL,
-      '${Config.API}/admin/profile/',
-    );
-    var response = await client.get(
-      url,
-      headers: requestHeaders,
-    );
+    try {
+      Map<String, String> requestHeaders = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${SharedService.getToken()}',
+      };
+      var url = Uri.https(
+        Config.apiURL,
+        '${Config.API}/admin/profile/',
+      );
+      var response = await client.get(
+        url,
+        headers: requestHeaders,
+      );
 
-    if (response.statusCode == 200) {
-      var data = jsonDecode(response.body);
-      return Admin.fromJson(data['data']);
-    } else {
-      return null;
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        return Admin.fromJson(data['responseData']);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception(e);
     }
   }
 
   @override
   Future<void> signOut() async {
-    html.window.localStorage.remove('token');
+    SharedService.clear();
+  }
+
+  @override
+  Future obtainTokenAndUserData() async {
+    try {
+      String? authToken = SharedService.getToken();
+
+      if (authToken == null) {
+        SharedService.setToken('');
+      }
+      Map<String, String> requestHeaders = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${SharedService.getToken()}',
+      };
+      var url = Uri.https(
+        Config.apiURL,
+        '${Config.API}/admin/checkToken',
+      );
+      var response = await client.get(
+        url,
+        headers: requestHeaders,
+      );
+      return jsonDecode(response.body);
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 }
