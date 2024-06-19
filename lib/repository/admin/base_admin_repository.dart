@@ -4,4 +4,5 @@ abstract class BaseAdminRepository {
   Future<bool> login(String email, String passWord);
   Future<Admin?> getProfile();
   Future<void> signOut();
+  Future obtainTokenAndUserData();
 }

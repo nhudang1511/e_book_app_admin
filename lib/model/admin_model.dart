@@ -1,28 +1,41 @@
-List<Admin> adminsFromJson(dynamic str) => List<Admin>.from((str).map((x) => Admin.fromJson(x)));
-class Admin{
-  late String id;
-  late String fullName;
-  late String email;
-  late String passWord;
-  late bool status;
+import 'dart:convert';
 
-  Admin(this.id, this.fullName, this.email, this.passWord, this.status);
+class Admin {
+  final String id;
+  final String fullName;
+  final String email;
+  final String passWord;
+  final bool status;
 
-  Admin.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    fullName = json['fullName'];
-    email = json['email'];
-    passWord = json['passWord'];
-    status = json['status'];
+  Admin({
+    required this.id,
+    required this.fullName,
+    required this.email,
+    required this.passWord,
+    required this.status,
+  });
+
+  factory Admin.fromMap(Map<String, dynamic> map) {
+    return Admin(
+      id: map['id'] ?? '',
+      fullName: map['fullName'] ?? '',
+      email: map['email'] ?? '',
+      passWord: map['passWord'] ?? '',
+      status: map['status'] ?? false,
+    );
   }
 
-  Map<String, dynamic> toJson() {
-    final data = <String, dynamic>{};
-    data['id'] = id;
-    data['fullName'] = fullName;
-    data['email'] = email;
-    data['passWord'] = passWord;
-    data['status'] = status;
-    return data;
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'fullName': fullName,
+      'email': email,
+      'passWord': passWord,
+      'status': status,
+    };
   }
+
+  String toJson() => json.encode(toMap());
+
+  factory Admin.fromJson(Map<String, dynamic> source) => Admin.fromMap(source);
 }

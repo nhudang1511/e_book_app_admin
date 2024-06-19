@@ -1,46 +1,42 @@
 import 'package:e_book_admin/blocs/blocs.dart';
-import 'package:e_book_admin/config/app_route.dart';
+import 'package:e_book_admin/config/share_preferences.dart';
 import 'package:e_book_admin/cubits/cubit.dart';
 import 'package:e_book_admin/repository/repositories.dart';
-import 'package:e_book_admin/screen/admin/admin_panel.screen.dart';
 import 'package:e_book_admin/screen/admin/components/menu_app_controller.dart';
-import 'package:e_book_admin/screen/login/login_screen.dart';
+import 'package:e_book_admin/screen/screen.dart';
+import 'package:e_book_admin/widgets/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'config/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'config/routes/router.dart';
 import 'config/theme/theme.dart';
-import 'firebase_options.dart';
+import 'providers/providers.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+  await SharedService.init();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => ThemeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => MenuAppController(),
+        ),
+        ChangeNotifierProvider.value(value: AuthProvider.initialize()),
+      ],
+      child: const MyApp(),
+    ),
   );
-  runApp(ChangeNotifierProvider(
-    create: (context) => ThemeProvider(),
-    child: const MyApp(),
-  ));
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-  // static FirebaseAnalyticsObserver observer = FirebaseAnalyticsObserver(analytics: analytics);
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => MenuAppController()),
         BlocProvider(
           create: (_) => LoginCubit(
             adminRepository: AdminRepository(),
@@ -56,8 +52,8 @@ class _MyAppState extends State<MyApp> {
             ..add(LoadAuthors()),
         ),
         BlocProvider(
-          create: (_) => BookBloc(bookRepository: BookRepository())
-            ..add(LoadBooks()),
+          create: (_) =>
+              BookBloc(bookRepository: BookRepository())..add(LoadBooks()),
         ),
         BlocProvider(
           create: (_) => CategoryBloc(categoryRepository: CategoryRepository())
@@ -68,22 +64,82 @@ class _MyAppState extends State<MyApp> {
             ..add(LoadChapters()),
         ),
         BlocProvider(
-          create: (_) => UserBloc(userRepository: UserRepository())
-            ..add(LoadUser()),
+          create: (_) =>
+              UserBloc(userRepository: UserRepository())..add(LoadUser()),
         ),
         BlocProvider(
-          create: (_) => ViewBloc(bookRepository: BookRepository())
-            ..add(LoadView()),
+          create: (_) =>
+              ViewBloc(bookRepository: BookRepository())..add(LoadView()),
         ),
       ],
       child: MaterialApp(
         title: 'E Book App Admin',
         debugShowCheckedModeBanner: false,
         theme: lightTheme,
-        home: const LoginScreen(),
-        darkTheme: darkTheme,
-        onGenerateRoute: AppRouter.onGenerateRoute,
+        initialRoute: '/',
+        onGenerateRoute: (settings) => generateRoute(settings),
       ),
+    );
+  }
+}
+
+class AppPagesController extends StatefulWidget {
+  const AppPagesController({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _AppPagesControllerState();
+}
+
+class _AppPagesControllerState extends State<AppPagesController> {
+  late Future _future;
+  final AdminRepository _adminRepository = AdminRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    _future = obtainTokenAndUserData();
+  }
+
+  obtainTokenAndUserData() async {
+    await _adminRepository.obtainTokenAndUserData();
+    if (SharedService.getToken() != null) {
+      await _adminRepository.getProfile();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
+
+    return FutureBuilder(
+      future: _future,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return const Scaffold(
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [Text("Something went wrong")],
+            ),
+          );
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          switch (authProvider.status) {
+            case Status.Uninitialized:
+              return const Loading();
+            case Status.Unauthenticated:
+            case Status.Authenticating:
+              return const LoginScreen();
+            case Status.Authenticated:
+              return const AdminPanel();
+            default:
+              return const LoginScreen();
+          }
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return const Loading();
+      },
     );
   }
 }

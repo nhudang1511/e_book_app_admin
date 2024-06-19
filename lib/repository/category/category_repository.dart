@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'dart:html' as html;
 import 'package:e_book_admin/model/models.dart';
 import 'package:e_book_admin/utils/utils.dart';
 import 'package:file_picker/file_picker.dart';
 
+import '../../config/share_preferences.dart';
 import 'base_category_repository.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,7 +14,7 @@ class CategoryRepository extends BaseCategoryRepository {
   Future<List<Category>?> getAllCategory() async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${html.window.localStorage['token']}',
+      'Authorization': 'Bearer ${SharedService.getToken()}',
     };
     var url = Uri.https(
       Config.apiURL,
@@ -27,7 +27,7 @@ class CategoryRepository extends BaseCategoryRepository {
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      return categoriesFromJson(data["data"]);
+      return categoriesFromJson(data["responseData"]);
     } else {
       return null;
     }
@@ -45,7 +45,7 @@ class CategoryRepository extends BaseCategoryRepository {
       filename: image.name,
     );
     request.headers['Authorization'] =
-        'Bearer ${html.window.localStorage['token']}';
+        'Bearer ${SharedService.getToken()}';
     request.headers['Content-Type'] = 'multipart/form-data';
     request.files.add(multipartFile);
     var response = await request.send();
@@ -63,7 +63,7 @@ class CategoryRepository extends BaseCategoryRepository {
   Future<bool> deleteCategory(String categoryId) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${html.window.localStorage['token']}',
+      'Authorization': 'Bearer ${SharedService.getToken()}',
     };
     var url = Uri.https(Config.apiURL, '${Config.API}/category/delete/', {
       'categoryId': categoryId,
@@ -98,7 +98,7 @@ class CategoryRepository extends BaseCategoryRepository {
       request.files.add(multipartFile);
     }
     request.headers['Authorization'] =
-        'Bearer ${html.window.localStorage['token']}';
+        'Bearer ${SharedService.getToken()}';
     request.headers['Content-Type'] = 'multipart/form-data';
     var response = await request.send();
 

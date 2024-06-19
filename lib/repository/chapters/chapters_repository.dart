@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'dart:html' as html;
 import 'package:e_book_admin/utils/utils.dart';
 import 'package:e_book_admin/model/chapters_model.dart';
 
+import '../../config/share_preferences.dart';
 import 'base_chapters_repository.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,7 +13,7 @@ class ChaptersRepository extends BaseChaptersRepository {
   Future<List<Chapters>?> getAllChapters() async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${html.window.localStorage['token']}',
+      'Authorization': 'Bearer ${SharedService.getToken()}',
     };
     var url = Uri.https(
       Config.apiURL,
@@ -26,7 +26,7 @@ class ChaptersRepository extends BaseChaptersRepository {
 
     if (response.statusCode == 200) {
       var data = jsonDecode(response.body);
-      return chaptersFromJson(data["data"]);
+      return chaptersFromJson(data["responseData"]);
     } else {
       return null;
     }
@@ -36,7 +36,7 @@ class ChaptersRepository extends BaseChaptersRepository {
   Future<bool> addChapters(String bookId, Map<String, String> listChapters) async {
     Map<String, String> requestHeaders = {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ${html.window.localStorage['token']}',
+      'Authorization': 'Bearer ${SharedService.getToken()}',
     };
     var url = Uri.https(Config.apiURL, '${Config.API}/chapters/add/');
     var response = await client.post(

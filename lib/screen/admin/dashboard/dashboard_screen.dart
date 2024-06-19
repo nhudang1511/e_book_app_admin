@@ -23,17 +23,16 @@ class DashboardScreen extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 margin: const EdgeInsets.symmetric(vertical: 20),
                 child: GridView.builder(
-                    itemCount: 3,
+                    itemCount: 4,
                     shrinkWrap: true,
                     scrollDirection: Axis.vertical,
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      childAspectRatio: 2.2,
+                      crossAxisCount: 4,
+                      childAspectRatio: 1.9,
                     ),
                     itemBuilder: (context, index) {
                       if (index == 0) {
-                        // Chạy BlocA cho các index chẵn
                         return BlocBuilder<UserBloc, UserState>(
                           builder: (context, state) {
                             if (state is UserLoading) {
@@ -75,6 +74,28 @@ class DashboardScreen extends StatelessWidget {
                         );
                       }
                       if (index == 2) {
+                        return BlocBuilder<BookBloc, BookState>(
+                          builder: (context, state) {
+                            if (state is BookLoading) {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                            if (state is BookLoaded) {
+                              return TotalItems(
+                                recentData: RecentData(
+                                    icon: Icons.menu_book_sharp,
+                                    title: 'Total books',
+                                    number: state.books
+                                        .where((book) => book.status == true)
+                                        .length),
+                              );
+                            } else {
+                              return const Text("Something went wrong");
+                            }
+                          },
+                        );
+                      }
+                      if (index == 3) {
                         return BlocBuilder<BookBloc, BookState>(
                           builder: (context, state) {
                             if (state is BookLoading) {
