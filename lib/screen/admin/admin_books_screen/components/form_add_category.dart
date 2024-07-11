@@ -138,7 +138,7 @@ class _FormAddCategoryState extends State<FormAddCategory> {
             if (addCategoryFormKey.currentState!.validate()) {
               if (_fileImage != null) {
                 categoryBloc.add(AddCategory(nameController.text, _fileImage!));
-                Navigator.of(context).pop(nameController.text);
+                Navigator.of(context).pop();
               } else {
                 setState(() {
                   existImage = true;

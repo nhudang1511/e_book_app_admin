@@ -53,7 +53,7 @@ class CategoryRepository extends BaseCategoryRepository {
 
     if (multipartResponseData.statusCode == 201) {
       var responseData = jsonDecode(multipartResponseData.body);
-      return Category.fromJson(responseData['data']);
+      return Category.fromJson(responseData['responseData']);
     } else {
       return null;
     }
@@ -102,7 +102,7 @@ class CategoryRepository extends BaseCategoryRepository {
     request.headers['Content-Type'] = 'multipart/form-data';
     var response = await request.send();
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       return true;
     } else {
       return false;

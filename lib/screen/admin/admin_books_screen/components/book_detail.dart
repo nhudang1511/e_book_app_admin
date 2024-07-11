@@ -1,18 +1,19 @@
+import 'package:e_book_admin/items/items.dart';
+import 'package:e_book_admin/repository/repositories.dart';
+import 'package:e_book_admin/screen/admin/admin_books_screen/components/play_audio_dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:e_book_admin/model/models.dart';
+import 'package:flutter/widgets.dart';
+
+import '../../../../widgets/widgets.dart';
 
 class BookDetail extends StatefulWidget {
-  const BookDetail(
-      {super.key,
-      required this.book,
-      required this.categories,
-      required this.listChapters,
-      required this.listAuthors});
+  const BookDetail({
+    super.key,
+    required this.id,
+  });
 
-  final Book book;
-  final List<Category> categories;
-  final List<Chapters> listChapters;
-  final List<Author> listAuthors;
+  final String id;
 
   @override
   State<StatefulWidget> createState() => _BookDetailState();
@@ -20,87 +21,159 @@ class BookDetail extends StatefulWidget {
 
 class _BookDetailState extends State<BookDetail> {
   int currentStep = 1;
-  late List<String> listCategories = [];
-  late Chapters chapters;
+  late BookDetailItem? bookDetail;
+  late BookRepository bookRepository = BookRepository();
 
   @override
   void initState() {
     super.initState();
-    for (String categoryId in widget.book.categoryId) {
-      String category = widget.categories
-          .where((category) => category.id == categoryId)
-          .first
-          .name;
-      listCategories.add(category);
-      chapters = widget.listChapters
-          .firstWhere((chapters) => chapters.bookId == widget.book.id);
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder<BookDetailItem?>(
+      future: bookRepository.getBook(widget.id),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData && snapshot.data != null) {
+            bookDetail = snapshot.data;
+            return formBookDetail(context);
+          }
+        }
+        return const Loading();
+      },
+    );
+  }
+
+  Widget formBookDetail(BuildContext context) {
     double dialogWidth = MediaQuery.of(context).size.width * 0.5;
     List<Widget> listShowChapters = [];
-    List<String> sortedEntries = chapters.chapterList.keys.toList()
-      ..sort((a, b) {
-        int chapterNumberA = int.parse(a.replaceAll(RegExp(r'[^0-9]'), ''));
-        int chapterNumberB = int.parse(b.replaceAll(RegExp(r'[^0-9]'), ''));
-        return chapterNumberA.compareTo(chapterNumberB);
-      });;
-
-    for (String chapter in sortedEntries) {
-      listShowChapters.add(
-        Column(
-          children: [
-            Row(
-              children: [
-                Text('$chapter:'),
-                const SizedBox(
-                  width: 8,
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: SizedBox(
+    List<Widget> listShowAudios = [];
+    //get chapter
+    if (bookDetail?.listChapters != null) {
+      List<String> sortedEntries = bookDetail!.listChapters!.chapterList.keys
+          .toList()
+        ..sort((a, b) {
+          int chapterNumberA = int.parse(a.replaceAll(RegExp(r'[^0-9]'), ''));
+          int chapterNumberB = int.parse(b.replaceAll(RegExp(r'[^0-9]'), ''));
+          return chapterNumberA.compareTo(chapterNumberB);
+        });
+      for (String chapter in sortedEntries) {
+        listShowChapters.add(
+          Column(
+            children: [
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: SizedBox(
                                 width: dialogWidth,
                                 child: SingleChildScrollView(
-                                    child:
-                                        Text(chapters.chapterList[chapter]))),
-                            actions: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop(); // Đóng Dialog
-                                },
-                                child: const Text(
-                                  'Close',
-                                  style: TextStyle(color: Colors.white),
+                                  child: Text(
+                                    bookDetail!
+                                        .listChapters!.chapterList[chapter],
+                                  ),
                                 ),
                               ),
-                            ],
-                            title: Text(
-                              chapter,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold, fontSize: 20),
-                            ),
-                          );
-                        });
-                  },
-                  child: const Text(
-                    'View Chapter',
-                    style: TextStyle(color: Colors.white),
+                              actions: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop(); // Đóng Dialog
+                                  },
+                                  child: const Text(
+                                    'Close',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                              title: Text(
+                                chapter,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            );
+                          });
+                    },
+                    child: const Text(
+                      'View Chapter',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-          ],
-        ),
-      );
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Expanded(
+                    child: Text(chapter),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    //get audio
+    if (bookDetail?.listAudios != null) {
+      List<String> sortedEntries = bookDetail!.listAudios!.chapterList.keys
+          .toList()
+        ..sort((a, b) {
+          int chapterNumberA = int.parse(a.replaceAll(RegExp(r'[^0-9]'), ''));
+          int chapterNumberB = int.parse(b.replaceAll(RegExp(r'[^0-9]'), ''));
+          return chapterNumberA.compareTo(chapterNumberB);
+        });
+      for (String chapter in sortedEntries) {
+        listShowAudios.add(
+          Column(
+            children: [
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AudioPlayerDialog(
+                              chapterTitle: chapter,
+                              audioUrl:
+                                  bookDetail!.listAudios!.chapterList[chapter],
+                            );
+                          });
+                    },
+                    child: const Text(
+                      'Listen Audio',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 8,
+                  ),
+                  Expanded(
+                    child: Text(chapter),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+            ],
+          ),
+        );
+      }
     }
     return AlertDialog(
       title: const Text(
@@ -117,28 +190,24 @@ class _BookDetailState extends State<BookDetail> {
                 // TextField cho Title
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       'Title: ',
-                      style: TextStyle(color: Colors.white60),
+                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
-                    Text(widget.book.title)
+                    Text(
+                      bookDetail!.title,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 // TextField cho Author
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       'Author: ',
-                      style: TextStyle(color: Colors.white60),
+                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
-                    Text((widget.listAuthors
-                        .firstWhere(
-                          (author) => author.id == widget.book.authodId,
-                          orElse: () => Author(widget.book.authodId, 'unknown',
-                              true), // Default value or handle accordingly
-                        )
-                        .fullName!)),
+                    Text(bookDetail!.author.fullName!),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -151,24 +220,37 @@ class _BookDetailState extends State<BookDetail> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Description: ',
-                        style: TextStyle(color: Colors.white60),
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
-                      Expanded(child: Text(widget.book.description)),
+                      Expanded(child: Text(bookDetail!.description)),
                     ],
                   ),
                 ),
-                const SizedBox(height: 8),
+                // TextField cho price
 
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Text(
+                      'Price: ',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    Text(
+                      bookDetail!.price.toString(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
                 // TextField cho Language
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       'Language: ',
-                      style: TextStyle(color: Colors.white60),
+                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
-                    Text(widget.book.language),
+                    Text(bookDetail!.language),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -176,11 +258,11 @@ class _BookDetailState extends State<BookDetail> {
                 // TextField cho Country
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       'Country: ',
-                      style: TextStyle(color: Colors.white60),
+                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
-                    Text(widget.book.country),
+                    Text(bookDetail!.country),
                   ],
                 ),
 
@@ -188,36 +270,27 @@ class _BookDetailState extends State<BookDetail> {
                 // DropdownButton cho Category ID
                 Row(
                   children: [
-                    const Text(
+                    Text(
                       'Category: ',
-                      style: TextStyle(color: Colors.white60),
+                      style: Theme.of(context).textTheme.headlineMedium,
                     ),
-                    Text(listCategories.join(', ')),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                // TextField cho Chapters
-                Row(
-                  children: [
-                    const Text(
-                      'Chapters: ',
-                      style: TextStyle(color: Colors.white60),
-                    ),
-                    Text(widget.book.chapters.toString()),
+                    Text(bookDetail!.categories
+                        .map((category) => category.name)
+                        .join(', ')),
                   ],
                 ),
                 const SizedBox(height: 8),
                 // TextField cho Image URL
-                const Text(
+                Text(
                   'Image cover: ',
-                  style: TextStyle(color: Colors.white60),
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 const SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.network(
-                      widget.book.imageUrl,
+                      bookDetail!.imageUrl,
                       width: 200,
                       height: 200,
                     ),
@@ -226,30 +299,32 @@ class _BookDetailState extends State<BookDetail> {
                 // TextField cho Book Preview
                 const SizedBox(height: 8),
                 // TextField cho Image URL
-                const Text(
-                  'Book Preview: ',
-                  style: TextStyle(color: Colors.white60),
-                ),
-                const SizedBox(height: 4),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Image.network(
-                      widget.book.bookPreview[0],
-                      width: 350,
-                      height: 350,
-                    ),
-                    Image.network(
-                      widget.book.bookPreview[1],
-                      width: 350,
-                      height: 350,
-                    ),
-                  ],
-                ),
+                if (bookDetail!.bookPreview[0] != "") ...[
+                  Text(
+                    'Book review: ',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Image.network(
+                        bookDetail!.bookPreview[0],
+                        width: 350,
+                        height: 350,
+                      ),
+                      Image.network(
+                        bookDetail!.bookPreview[1],
+                        width: 350,
+                        height: 350,
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 4),
               ],
               if (currentStep == 2) ...listShowChapters,
+              if (currentStep == 3) ...listShowAudios,
             ],
           ),
         ),
@@ -268,19 +343,58 @@ class _BookDetailState extends State<BookDetail> {
             ),
           ),
           // button next
+          if (listShowChapters.isNotEmpty) ...[
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  currentStep = 2;
+                });
+              },
+              child: const Text(
+                'List chapters',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+          if (listShowAudios.isNotEmpty) ...[
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  currentStep = 3;
+                });
+              },
+              child: const Text(
+                'List Audios',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ],
+        if (currentStep == 2) ...[
+          // button cancel
           ElevatedButton(
             onPressed: () {
               setState(() {
-                currentStep = 2;
+                currentStep = 1;
               });
             },
             child: const Text(
-              'List chapters',
+              'Book Information',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+          // button next
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Đóng Dialog
+            },
+            child: const Text(
+              'Close',
               style: TextStyle(color: Colors.white),
             ),
           ),
         ],
-        if (currentStep == 2) ...[
+        if (currentStep == 3) ...[
           // button cancel
           ElevatedButton(
             onPressed: () {

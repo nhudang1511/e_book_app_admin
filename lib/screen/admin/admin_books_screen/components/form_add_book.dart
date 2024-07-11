@@ -1,9 +1,11 @@
 import 'package:e_book_admin/blocs/blocs.dart';
+import 'package:e_book_admin/screen/admin/admin_books_screen/components/form_add_audio.dart';
 import 'package:e_book_admin/screen/admin/admin_books_screen/components/form_add_category.dart';
 import 'package:e_book_admin/screen/admin/admin_books_screen/components/form_add_chapter.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:e_book_admin/model/models.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class FormAddBook extends StatefulWidget {
@@ -26,13 +28,20 @@ class _FormAddBookState extends State<FormAddBook> {
   final TextEditingController languageController = TextEditingController();
   final TextEditingController countryController = TextEditingController();
   final TextEditingController chaptersController = TextEditingController();
+  final TextEditingController audiosController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+
 
   late List<OptionCategory> listOptionCategories;
   late List<OptionCategory> selectedCategories = [];
   late Map<String, String> listChapters = {};
+  late Map<String, dynamic> listAudios = {};
+
   late List<bool> addedChapters;
+  late List<bool> addedAudios;
 
   int quantity = 0;
+  int quantityAudios = 0;
 
   PlatformFile? _fileImage;
   PlatformFile? _fileBookReview1;
@@ -40,10 +49,12 @@ class _FormAddBookState extends State<FormAddBook> {
 
   late bool existCategory = false;
   late bool existChapters = false;
+  late bool existAudios = false;
   late bool existFileImage = false;
   late bool existFileBookReview1 = false;
   late bool existFileBookReview2 = false;
   late bool addedAllChapters = true;
+  late bool addedAllAudios = true;
 
   Future<void> _pickFileImage() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -109,6 +120,28 @@ class _FormAddBookState extends State<FormAddBook> {
     }
   }
 
+  void incrementQuantityAudios() {
+    setState(() {
+      quantityAudios++;
+      audiosController.text = quantityAudios.toString();
+      if (quantityAudios != 0) {
+        existAudios = false;
+      }
+    });
+  }
+
+  void decrementQuantityAudio() {
+    if (quantityAudios > 0) {
+      setState(() {
+        quantityAudios--;
+        audiosController.text = quantityAudios.toString();
+        if (quantityAudios != 0) {
+          existAudios = false;
+        }
+      });
+    }
+  }
+
   List<OptionCategory> mapListCategories(
       List<Category> categories, List<OptionCategory> selected) {
     List<OptionCategory> listOptionCategories = categories.map((category) {
@@ -126,9 +159,11 @@ class _FormAddBookState extends State<FormAddBook> {
   void initState() {
     super.initState();
     chaptersController.text = quantity.toString();
+    audiosController.text = quantityAudios.toString();
     bookBloc = BlocProvider.of(context);
     existCategory = false;
     existChapters = false;
+    existAudios = false;
     existFileImage = false;
     existFileBookReview1 = false;
     existFileBookReview2 = false;
@@ -139,52 +174,107 @@ class _FormAddBookState extends State<FormAddBook> {
   Widget build(BuildContext context) {
     double dialogWidth = MediaQuery.of(context).size.width * 0.5;
     List<Widget> addChapters = [];
+    List<Widget> addAudios = [];
     if (currentStep == 2) {
       for (int i = 1; i <= quantity; i++) {
-        addChapters.add(Column(
-          children: [
-            Row(
-              children: [
-                Text("Chapter $i: "),
-                addedChapters[i - 1] == true
-                    ? const Icon(Icons.check, color: Colors.green)
-                    : ElevatedButton(
-                        onPressed: () async {
-                          Map<String, String>? chapterData =
-                              await showDialog<Map<String, String>>(
-                            context: context,
-                            barrierDismissible: false,
-                            builder: (BuildContext context) {
-                              return const FormAddChapter();
-                            },
-                          );
-                          setState(() {
-                            if (chapterData != null) {
-                              String title = chapterData['title'] ?? '';
-                              String content = chapterData['content'] ?? '';
-                              if (title == '') {
-                                listChapters['Chapter $i'] = content;
-                              } else {
-                                listChapters['Chapter $i: $title'] = content;
+        addChapters.add(
+          Column(
+            children: [
+              Row(
+                children: [
+                  Text("Chapter $i: "),
+                  addedChapters[i - 1] == true
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : ElevatedButton(
+                          onPressed: () async {
+                            Map<String, String>? chapterData =
+                                await showDialog<Map<String, String>>(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return const FormAddChapter();
+                              },
+                            );
+                            setState(() {
+                              if (chapterData != null) {
+                                String title = chapterData['title'] ?? '';
+                                String content = chapterData['content'] ?? '';
+                                if (title == '') {
+                                  listChapters['Chapter $i'] = content;
+                                } else {
+                                  listChapters['Chapter $i: $title'] = content;
+                                }
+                                setState(() {
+                                  addedChapters[i - 1] = true;
+                                });
                               }
-                              setState(() {
-                                addedChapters[i - 1] = true;
-                              });
-                            }
-                          });
-                        },
-                        child: const Text(
-                          '+ Add Chapter',
-                          style: TextStyle(color: Colors.white),
+                            });
+                          },
+                          child: const Text(
+                            '+ Add Chapter',
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
-                      ),
-              ],
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-          ],
-        ));
+                ],
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+            ],
+          ),
+        );
+      }
+    }
+    if (currentStep == 3) {
+      for (int i = 1; i <= quantityAudios; i++) {
+        addAudios.add(
+          Column(
+            children: [
+              Row(
+                children: [
+                  Text("Chapter $i: "),
+                  addedAudios[i - 1] == true
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : ElevatedButton(
+                          onPressed: () async {
+                            Map<String, dynamic>? audioData =
+                                await showDialog<Map<String, dynamic>>(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (BuildContext context) {
+                                return const FormAddAudio();
+                              },
+                            );
+                            setState(() {
+                              if (audioData != null) {
+                                String title = audioData['title'] ?? '';
+                                PlatformFile? content = audioData['content'];
+                                if (title == '') {
+                                  listAudios['Chapter $i'] = content!;
+                                } else {
+                                  listAudios[
+                                          'Chapter $i: ${title.toString()}'] =
+                                      content!;
+                                }
+                                setState(() {
+                                  addedAudios[i - 1] = true;
+                                });
+                              }
+                            });
+                          },
+                          child: const Text(
+                            '+ Add Audio',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                ],
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+            ],
+          ),
+        );
       }
     }
 
@@ -253,6 +343,26 @@ class _FormAddBookState extends State<FormAddBook> {
                       ),
                     ),
                   ),
+                  // TextField cho price
+                  TextFormField(
+                    controller: priceController,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Enter Price";
+                      }
+                      return null;
+                    },
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                    decoration: const InputDecoration(
+                      labelText: 'Price*',
+                      errorStyle: TextStyle(
+                        color: Colors.redAccent,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
                   // TextField cho Language
                   TextFormField(
                     controller: languageController,
@@ -303,14 +413,17 @@ class _FormAddBookState extends State<FormAddBook> {
                                   .toList(),
                               selectedCategories);
                           return PopupMenuButton<String>(
-                            child: const Row(
+                            child: Row(
                               children: [
-                                Text('Select Category*',
-                                    style: TextStyle(color: Colors.white60)),
-                                // Thay thế bằng text mong muốn
-                                Icon(
+                                Text(
+                                  'Select Category*',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium,
+                                ),
+                                const Icon(
                                   Icons.keyboard_arrow_down,
-                                  color: Colors.white,
+                                  color: Colors.black,
                                 ),
                               ],
                             ),
@@ -365,29 +478,18 @@ class _FormAddBookState extends State<FormAddBook> {
                         },
                         child: const Text(
                           '+ New Category',
-                          style: TextStyle(
-                            color: Colors.white,
-                          ),
+                          style: TextStyle(color: Colors.white),
                         ),
                       ),
                     ],
                   ),
-                  existCategory == true
-                      ? const Text(
-                          'Select category',
-                          style: TextStyle(
-                            color: Colors.redAccent,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        )
-                      : const Text(''),
                   // TextField cho Chapters
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Chapters*: ',
-                        style: TextStyle(color: Colors.white60),
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       IconButton(
                         icon: const Icon(
@@ -426,9 +528,63 @@ class _FormAddBookState extends State<FormAddBook> {
                       ),
                     ],
                   ),
-                  existChapters == true
+                  existChapters == true && existAudios == true
                       ? const Text(
-                          'Enter chapters',
+                          'Enter at least 1 audio or chapter field',
+                          style: TextStyle(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        )
+                      : const Text(''),
+                  // Textfield cho audios
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Audios*: ',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.remove,
+                          color: Colors.red,
+                        ),
+                        onPressed: decrementQuantityAudio,
+                      ),
+                      SizedBox(
+                        width: 32,
+                        height: 32,
+                        child: TextFormField(
+                          controller: audiosController,
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) {
+                            setState(() {
+                              quantityAudios = int.tryParse(value)!;
+                              if (int.tryParse(value) != 0) {
+                                existAudios = false;
+                              }
+                            });
+                          },
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(
+                          Icons.add,
+                          color: Colors.green,
+                        ),
+                        onPressed: incrementQuantityAudios,
+                      ),
+                    ],
+                  ),
+                  existAudios == true && existChapters == true
+                      ? const Text(
+                          'Enter audios',
                           style: TextStyle(
                             color: Colors.redAccent,
                             fontWeight: FontWeight.normal,
@@ -439,9 +595,9 @@ class _FormAddBookState extends State<FormAddBook> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Cover Image*: ',
-                        style: TextStyle(color: Colors.white60),
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -477,9 +633,9 @@ class _FormAddBookState extends State<FormAddBook> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Book review*: ',
-                        style: TextStyle(color: Colors.white60),
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -490,9 +646,11 @@ class _FormAddBookState extends State<FormAddBook> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 )
-                              : const Text(
+                              : Text(
                                   'Page 1: ',
-                                  style: TextStyle(color: Colors.white60),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium,
                                 ),
                           ElevatedButton(
                             onPressed: _pickBookReview1,
@@ -522,9 +680,11 @@ class _FormAddBookState extends State<FormAddBook> {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 )
-                              : const Text(
+                              : Text(
                                   'Page 2: ',
-                                  style: TextStyle(color: Colors.white60),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium,
                                 ),
                           ElevatedButton(
                             onPressed: _pickBookReview2,
@@ -551,8 +711,17 @@ class _FormAddBookState extends State<FormAddBook> {
                 ],
                 if (currentStep == 2) ...addChapters,
                 addedAllChapters == false
-                    ? const Text('Please add all chapters',
-                        style: TextStyle(color: Colors.redAccent))
+                    ? const Text(
+                        'Please add all chapters',
+                        style: TextStyle(color: Colors.redAccent),
+                      )
+                    : const Text(''),
+                if (currentStep == 3) ...addAudios,
+                addedAllAudios == false
+                    ? const Text(
+                        'Please add all audios',
+                        style: TextStyle(color: Colors.redAccent),
+                      )
                     : const Text(''),
               ],
             ),
@@ -577,7 +746,7 @@ class _FormAddBookState extends State<FormAddBook> {
             onPressed: () async {
               if (addBookFormKey.currentState!.validate() &&
                   selectedCategories.isNotEmpty &&
-                  quantity != 0 &&
+                  (quantity != 0 || quantityAudios != 0) &&
                   _fileImage != null &&
                   _fileBookReview1 != null &&
                   _fileBookReview2 != null) {
@@ -589,11 +758,17 @@ class _FormAddBookState extends State<FormAddBook> {
                     languageController.text,
                     titleController.text,
                     [_fileBookReview1!, _fileBookReview2!],
-                    quantity,
+                    quantity != 0 ? quantity : quantityAudios,
                     countryController.text));
                 setState(() {
-                  addedChapters = List.generate(quantity, (index) => false);
-                  currentStep = 2;
+                  if (quantity != 0) {
+                    addedChapters = List.generate(quantity, (index) => false);
+                    currentStep = 2;
+                  } else {
+                    addedAudios =
+                        List.generate(quantityAudios, (index) => false);
+                    currentStep = 3;
+                  }
                 });
               }
               if (selectedCategories.isEmpty) {
@@ -601,9 +776,10 @@ class _FormAddBookState extends State<FormAddBook> {
                   existCategory = true;
                 });
               }
-              if (quantity == 0) {
+              if (quantity == 0 && quantityAudios == 0) {
                 setState(() {
                   existChapters = true;
+                  existAudios = true;
                 });
               }
               if (_fileImage == null) {
@@ -640,13 +816,61 @@ class _FormAddBookState extends State<FormAddBook> {
             ),
           ),
           // button next
+          if (quantityAudios != 0) ...[
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  addedAudios = List.generate(quantityAudios, (index) => false);
+                  currentStep = 3;
+                }); // Đóng Dialog
+              },
+              child: const Text(
+                'Next',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+          if (quantityAudios == 0) ...[
+            ElevatedButton(
+              onPressed: () {
+                if (listChapters.length == quantity) {
+                  Navigator.of(context).pop({
+                    'listChapters': listChapters,
+                    'listAudios': listAudios,
+                  });
+                } else {
+                  setState(() {
+                    addedAllChapters = false;
+                  });
+                }
+              },
+              child: const Text(
+                'Add',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ],
+        if (currentStep == 3) ...[
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.of(context).pop(); // Đóng Dialog
+            },
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
           ElevatedButton(
             onPressed: () {
-              if (listChapters.length == quantity) {
-                Navigator.of(context).pop(listChapters);
+              if (listAudios.length == quantityAudios) {
+                Navigator.of(context).pop({
+                  'listChapters': listChapters,
+                  'listAudios': listAudios,
+                });
               } else {
                 setState(() {
-                  addedAllChapters = false;
+                  addedAllAudios = false;
                 });
               }
             },

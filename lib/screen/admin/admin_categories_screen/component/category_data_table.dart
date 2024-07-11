@@ -63,7 +63,7 @@ class _CategoryDataTableState extends State<CategoryDataTable> {
             ),
           ],
           source: _DataSource(widget.listCategories, categoryBloc, context),
-          rowsPerPage: 5, // Change this to set the number of rows per page.
+          rowsPerPage: 5,
         ),
       ),
     );

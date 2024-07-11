@@ -18,17 +18,10 @@ Route<dynamic> generateRoute(RouteSettings settings) {
 }
 
 PageRoute _getPageRoute(Widget child, RouteSettings settings) {
-  // if (SharedService.getToken() != null) {
-    return MaterialPageRoute(
-      builder: (context) => child,
-      settings: settings,
-    );
-  // } else {
-  //   return MaterialPageRoute(
-  //     builder: (context) => const LoginScreen(),
-  //     settings: const RouteSettings(name: loginRoute),
-  //   );
-  // }
+  return MaterialPageRoute(
+    builder: (context) => child,
+    settings: settings,
+  );
 }
 
 Route _errorRoute() {

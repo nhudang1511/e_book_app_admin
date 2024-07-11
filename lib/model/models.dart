@@ -5,3 +5,5 @@ export 'category_model.dart';
 export 'chapters_model.dart';
 export 'user_model.dart';
 export 'view_model.dart';
+export 'mission_model.dart';
+export 'audio_model.dart';

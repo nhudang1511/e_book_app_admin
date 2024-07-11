@@ -20,14 +20,16 @@ class SliderMenu extends StatelessWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
-            DrawerHeader(child: Image.asset('assets/logo/logo.png')),
+            DrawerHeader(
+              child: Image.asset('assets/logo/logo.png'),
+            ),
             DrawerListTile(
               title: 'Dashboard',
               icons: Icons.dashboard_rounded,
               press: () {
                 _tabController.animateTo(0);
               },
-              isSelected: _selectedTabIndex == 0, // Kiểm tra tab hiện tại
+              isSelected: _selectedTabIndex == 0,
             ),
             DrawerListTile(
               title: 'Categories',
@@ -35,7 +37,7 @@ class SliderMenu extends StatelessWidget {
               press: () {
                 _tabController.animateTo(1);
               },
-              isSelected: _selectedTabIndex == 1, // Kiểm tra tab hiện tại
+              isSelected: _selectedTabIndex == 1,
             ),
             DrawerListTile(
               title: 'Books',
@@ -43,7 +45,7 @@ class SliderMenu extends StatelessWidget {
               press: () {
                 _tabController.animateTo(2);
               },
-              isSelected: _selectedTabIndex == 2, // Kiểm tra tab hiện tại
+              isSelected: _selectedTabIndex == 2,
             ),
             DrawerListTile(
               title: 'Users',
@@ -51,8 +53,24 @@ class SliderMenu extends StatelessWidget {
               press: () {
                 _tabController.animateTo(3);
               },
-              isSelected: _selectedTabIndex == 3, // Kiểm tra tab hiện tại
+              isSelected: _selectedTabIndex == 3,
             ),
+            DrawerListTile(
+              title: 'Missions',
+              icons: Icons.task_alt,
+              press: () {
+                _tabController.animateTo(4);
+              },
+              isSelected: _selectedTabIndex == 4,
+            ),
+            // DrawerListTile(
+            //   title: 'Sales',
+            //   icons: Icons.monetization_on,
+            //   press: () {
+            //     _tabController.animateTo(5);
+            //   },
+            //   isSelected: _selectedTabIndex == 5,
+            // ),
             if (!Responsive.isDesktop(context))
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -74,13 +92,14 @@ class DrawerListTile extends StatelessWidget {
     required this.title,
     required this.icons,
     required this.press,
-    required this.isSelected, // Trạng thái chọn
+    required this.isSelected,
   });
 
   final String title;
   final IconData icons;
   final VoidCallback press;
-  final bool isSelected; // Trạng thái chọn
+  final bool isSelected;
+
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -95,14 +114,13 @@ class DrawerListTile extends StatelessWidget {
             ? Theme.of(context).colorScheme.secondaryContainer
             : Colors.black,
       ),
-      // Thay đổi màu dựa trên trạng thái chọn
       title: Text(
         title,
         style: Theme.of(context).textTheme.titleLarge!.copyWith(
               color: isSelected
                   ? Theme.of(context).colorScheme.secondaryContainer
                   : Colors.black,
-            ), // Thay đổi màu dựa trên trạng thái chọn
+            ),
       ),
     );
   }

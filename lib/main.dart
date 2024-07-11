@@ -1,3 +1,4 @@
+import 'package:e_book_admin/blocs/audio/audio_bloc.dart';
 import 'package:e_book_admin/blocs/blocs.dart';
 import 'package:e_book_admin/config/share_preferences.dart';
 import 'package:e_book_admin/cubits/cubit.dart';
@@ -44,32 +45,59 @@ class MyApp extends StatelessWidget {
           child: const LoginScreen(),
         ),
         BlocProvider(
-          create: (_) => AuthBloc(adminRepository: AdminRepository())
-            ..add(AuthEventStarted()),
+          create: (_) => AuthorBloc(
+            authorRepository: AuthorRepository(),
+          )..add(
+              LoadAuthors(),
+            ),
         ),
         BlocProvider(
-          create: (_) => AuthorBloc(authorRepository: AuthorRepository())
-            ..add(LoadAuthors()),
+          create: (_) => BookBloc(
+            bookRepository: BookRepository(),
+          )..add(
+              LoadBooks(),
+            ),
         ),
         BlocProvider(
-          create: (_) =>
-              BookBloc(bookRepository: BookRepository())..add(LoadBooks()),
+          create: (_) => CategoryBloc(
+            categoryRepository: CategoryRepository(),
+          )..add(
+              LoadCategory(),
+            ),
         ),
         BlocProvider(
-          create: (_) => CategoryBloc(categoryRepository: CategoryRepository())
-            ..add(LoadCategory()),
+          create: (_) => ChaptersBloc(
+            chaptersRepository: ChaptersRepository(),
+          )..add(
+              LoadChapters(),
+            ),
         ),
         BlocProvider(
-          create: (_) => ChaptersBloc(chaptersRepository: ChaptersRepository())
-            ..add(LoadChapters()),
+          create: (_) => UserBloc(
+            userRepository: UserRepository(),
+          )..add(
+              LoadUser(),
+            ),
         ),
         BlocProvider(
-          create: (_) =>
-              UserBloc(userRepository: UserRepository())..add(LoadUser()),
+          create: (_) => ViewBloc(
+            bookRepository: BookRepository(),
+          )..add(
+              LoadView(),
+            ),
         ),
         BlocProvider(
-          create: (_) =>
-              ViewBloc(bookRepository: BookRepository())..add(LoadView()),
+          create: (_) => MissionBloc(
+            missionRepository: MissionRepository(),
+          )..add(
+              LoadMissions(),
+            ),
+        ),BlocProvider(
+          create: (_) => AudioBloc(
+            audioRepository: AudioRepository(),
+          )..add(
+            LoadAudio(),
+          ),
         ),
       ],
       child: MaterialApp(

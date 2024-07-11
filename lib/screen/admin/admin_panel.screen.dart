@@ -1,3 +1,5 @@
+import 'package:e_book_admin/screen/admin/admin_coins_screen/admin_coins_screen.dart';
+import 'package:e_book_admin/screen/admin/admin_missions_screen/admin_missions_screen.dart';
 import 'package:flutter/material.dart';
 import '../../config/responsive.dart';
 import 'admin_books_screen/admin_books_screen.dart';
@@ -17,14 +19,15 @@ class AdminPanel extends StatefulWidget {
   State<AdminPanel> createState() => _AdminPanelState();
 }
 
-class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateMixin {
+class _AdminPanelState extends State<AdminPanel>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   int _selectedTabIndex = 0; // Biến để theo dõi tab hiện tại
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this); // 4 tabs
+    _tabController = TabController(length: 5, vsync: this); // 4 tabs
 
     // Add listener to switch tabs when DrawerListTile is pressed
     _tabController.addListener(() {
@@ -41,8 +44,8 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       key: context.read<MenuAppController>().scaffoldKey,
-      drawer: SliderMenu(tabController: _tabController,
-          selectedTabIndex: _selectedTabIndex),
+      drawer: SliderMenu(
+          tabController: _tabController, selectedTabIndex: _selectedTabIndex),
       body: SafeArea(
         child: Row(
           children: [
@@ -57,7 +60,9 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
                         DashboardScreen(),
                         AdminCategoriesScreen(),
                         AdminBooksScreen(),
-                        AdminUsersScreen()
+                        AdminUsersScreen(),
+                        AdminMissionsScreen(),
+                        // AdminCoinsScreen()
                       ],
                     ),
                   ),
@@ -70,4 +75,3 @@ class _AdminPanelState extends State<AdminPanel> with SingleTickerProviderStateM
     );
   }
 }
-
