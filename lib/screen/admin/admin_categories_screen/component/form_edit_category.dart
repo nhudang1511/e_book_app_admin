@@ -31,6 +31,7 @@ class _FormEditCategoryState extends State<FormEditCategory> {
 
   @override
   void initState() {
+    super.initState();
     categoryBloc = BlocProvider.of(context);
     nameController.text= widget.category.name;
   }
@@ -59,6 +60,7 @@ class _FormEditCategoryState extends State<FormEditCategory> {
                     if (value!.isEmpty) {
                       return "Enter Name Category";
                     }
+                    return null;
                   },
                   onChanged: (value) {
                     setState(() {});

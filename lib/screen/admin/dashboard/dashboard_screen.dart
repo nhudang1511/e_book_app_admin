@@ -1,130 +1,110 @@
-import 'package:e_book_admin/blocs/blocs.dart';
+import 'package:e_book_admin/items/items.dart';
+import 'package:e_book_admin/repository/repositories.dart';
+import 'package:e_book_admin/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../config/responsive.dart';
 import 'components/dashboard_row2.dart';
 import '../components/header.dart';
 
-class DashboardScreen extends StatelessWidget {
+class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
   @override
+  State<StatefulWidget> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends State<DashboardScreen> {
+  late StatisticItem? statisticItem;
+  late StatisticRepository statisticRepository = StatisticRepository();
+
+  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Drawer(
-        backgroundColor: Theme.of(context).colorScheme.onBackground,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const Header(
-                title: 'Dashboard',
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                margin: const EdgeInsets.symmetric(vertical: 20),
-                child: GridView.builder(
-                    itemCount: 4,
-                    shrinkWrap: true,
-                    scrollDirection: Axis.vertical,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      childAspectRatio: 1.9,
+    return FutureBuilder<StatisticItem?>(
+        future: statisticRepository.getStatistic(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.hasData && snapshot.data != null) {
+              return SafeArea(
+                child: Drawer(
+                  backgroundColor: Theme.of(context).colorScheme.onBackground,
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const Header(
+                          title: 'Dashboard',
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          margin: const EdgeInsets.symmetric(vertical: 20),
+                          child: GridView.builder(
+                            itemCount: 5,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 5,
+                              childAspectRatio: 1.8,
+                            ),
+                            itemBuilder: (context, index) {
+                              if (index == 0) {
+                                return TotalItems(
+                                  recentData: RecentData(
+                                      icon: Icons.group_sharp,
+                                      title: 'Total users',
+                                      number: snapshot.data!.totalUsers),
+                                );
+                              }
+                              if (index == 1) {
+                                return TotalItems(
+                                  recentData: RecentData(
+                                      icon: Icons.visibility,
+                                      title: 'Total views',
+                                      number: snapshot.data!.totalViews),
+                                );
+                              }
+                              if (index == 2) {
+                                return TotalItems(
+                                  recentData: RecentData(
+                                    icon: Icons.menu_book_sharp,
+                                    title: 'Total books',
+                                    number: snapshot.data!.totalBooks,
+                                  ),
+                                );
+                              }
+                              if (index == 3) {
+                                return TotalItems(
+                                  recentData: RecentData(
+                                    icon: Icons.task_alt,
+                                    title: 'Total missions',
+                                    number: snapshot.data!.totalMissions,
+                                  ),
+                                );
+                              }
+                              if (index == 4) {
+                                return TotalItems(
+                                  recentData: RecentData(
+                                    icon: Icons.attach_money,
+                                    title: 'Revenue',
+                                    number: snapshot.data!.totalRevenues,
+                                  ),
+                                );
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                        DashBoardRow2(
+                          revenueByMonthItem: snapshot.data!.revenueByMonth,
+                        ),
+                      ],
                     ),
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return BlocBuilder<UserBloc, UserState>(
-                          builder: (context, state) {
-                            if (state is UserLoading) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
-                            if (state is UserLoaded) {
-                              return TotalItems(
-                                recentData: RecentData(
-                                    icon: Icons.group_sharp,
-                                    title: 'Total users',
-                                    number: state.users.length),
-                              );
-                            } else {
-                              return const Text("Something went wrong");
-                            }
-                          },
-                        );
-                      }
-                      if (index == 1) {
-                        return BlocBuilder<ViewBloc, ViewState>(
-                          builder: (context, state) {
-                            if (state is ViewLoading) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
-                            if (state is ViewLoaded) {
-                              return TotalItems(
-                                recentData: RecentData(
-                                    icon: Icons.visibility,
-                                    title: 'Total views',
-                                    number: state.views.fold(
-                                        0, (sum, item) => sum + item.views)),
-                              );
-                            } else {
-                              return const Text("Something went wrong");
-                            }
-                          },
-                        );
-                      }
-                      if (index == 2) {
-                        return BlocBuilder<BookBloc, BookState>(
-                          builder: (context, state) {
-                            if (state is BookLoading) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
-                            if (state is BookLoaded) {
-                              return TotalItems(
-                                recentData: RecentData(
-                                    icon: Icons.menu_book_sharp,
-                                    title: 'Total books',
-                                    number: state.books
-                                        .where((book) => book.status == true)
-                                        .length),
-                              );
-                            } else {
-                              return const Text("Something went wrong");
-                            }
-                          },
-                        );
-                      }
-                      if (index == 3) {
-                        return BlocBuilder<BookBloc, BookState>(
-                          builder: (context, state) {
-                            if (state is BookLoading) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            }
-                            if (state is BookLoaded) {
-                              return TotalItems(
-                                recentData: RecentData(
-                                    icon: Icons.menu_book_sharp,
-                                    title: 'Total books',
-                                    number: state.books
-                                        .where((book) => book.status == true)
-                                        .length),
-                              );
-                            } else {
-                              return const Text("Something went wrong");
-                            }
-                          },
-                        );
-                      }
-                    }),
-              ),
-              DashBoardRow2()
-            ],
-          ),
-        ),
-      ),
-    );
+                  ),
+                ),
+              );
+            }
+          }
+          return const Loading();
+        });
   }
 }
 

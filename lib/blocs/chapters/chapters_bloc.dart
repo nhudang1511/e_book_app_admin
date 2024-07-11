@@ -17,12 +17,11 @@ class ChaptersBloc extends Bloc<ChaptersEvent, ChaptersState> {
     on<AddChapters>(_onAddChapters);
   }
   void _onLoadChapters(event, Emitter<ChaptersState> emit) async{
-    List<Chapters>? data = await _chaptersRepository.getAllChapters();
-    add(UpdateChapters(data!));
+    add(const UpdateChapters());
 
   }
   void _onUpdateChapters(event, Emitter<ChaptersState> emit) async{
-    emit(ChaptersLoaded(chapters: event.chapters));
+    emit(const ChaptersLoaded());
   }
   void _onAddChapters(event, Emitter<ChaptersState> emit) async{
     await _chaptersRepository.addChapters(event.bookId, event.listChapter);

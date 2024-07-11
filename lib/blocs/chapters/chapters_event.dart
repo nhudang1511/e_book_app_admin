@@ -11,10 +11,9 @@ class LoadChapters extends ChaptersEvent{
 }
 
 class UpdateChapters extends ChaptersEvent{
-  final List<Chapters> chapters;
-  const UpdateChapters(this.chapters);
+  const UpdateChapters();
   @override
-  List<Object?> get props => [chapters];
+  List<Object?> get props => [];
 }
 class AddChapters extends ChaptersEvent {
   final String bookId;

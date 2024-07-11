@@ -12,7 +12,6 @@ class AdminCategoriesScreen extends StatefulWidget {
 }
 
 class _AdminCategoriesScreenState extends State<AdminCategoriesScreen> {
-  late BookBloc bookBloc;
 
   @override
   void initState() {
@@ -27,26 +26,27 @@ class _AdminCategoriesScreenState extends State<AdminCategoriesScreen> {
       }
       if (state is CategoryLoaded) {
         return SafeArea(
-            child: Drawer(
-          backgroundColor: Theme.of(context).colorScheme.onBackground,
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const Header(
-                  title: 'Categories',
-                ),
-                CategoryDataTable(
-                  id: 'Category ID',
-                  name: 'Category Name',
-                  listCategories: (state.categories
-                      .where((model) => model.status == true)
-                      .toList()
-                    ..sort((a, b) => a.name.compareTo(b.name))),
-                ),
-              ],
+          child: Drawer(
+            backgroundColor: Theme.of(context).colorScheme.onBackground,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  const Header(
+                    title: 'Categories',
+                  ),
+                  CategoryDataTable(
+                    id: 'Category ID',
+                    name: 'Category Name',
+                    listCategories: (state.categories
+                        .where((model) => model.status == true)
+                        .toList()
+                      ..sort((a, b) => a.name.compareTo(b.name))),
+                  ),
+                ],
+              ),
             ),
           ),
-        ));
+        );
       } else {
         return const Text("Something went wrong");
       }

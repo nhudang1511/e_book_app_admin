@@ -1,8 +1,9 @@
 import 'package:e_book_admin/blocs/blocs.dart';
-import 'package:e_book_admin/model/models.dart';
 import 'package:e_book_admin/screen/admin/admin_books_screen/components/book_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../items/items.dart';
 
 class BookDataTable extends StatefulWidget {
   const BookDataTable({
@@ -11,19 +12,15 @@ class BookDataTable extends StatefulWidget {
     required this.name,
     required this.authorName,
     required this.view,
-    required this.listBooks,
-    required this.listAuthors,
-    required this.listViews,
-    required this.categories,
-    required this.listChapters,
+    required this.listBookItems,
+    required this.totalBook,
+    required this.onChangedPage,
   }) : super(key: key);
 
   final String id, name, authorName, view;
-  final List<Book> listBooks;
-  final List<Author> listAuthors;
-  final List<ViewModel> listViews;
-  final List<Category> categories;
-  final List<Chapters> listChapters;
+  final List<BookItem> listBookItems;
+  final int totalBook;
+  final Function(int) onChangedPage;
 
   @override
   State<StatefulWidget> createState() => _BookDateTableState();
@@ -71,15 +68,14 @@ class _BookDateTableState extends State<BookDataTable> {
             ),
           ],
           source: _DataSource(
-              widget.listBooks,
-              context,
-              bookBloc,
-              widget.listAuthors,
-              widget.listViews,
-              widget.categories,
-              widget.listChapters,
-              widget.listAuthors),
-          rowsPerPage: 5, // Change this to set the number of rows per page.
+            widget.listBookItems,
+            context,
+            bookBloc,
+            widget.totalBook,
+          ),
+          rowsPerPage: 5,
+          onPageChanged: widget
+              .onChangedPage, // Change this to set the number of rows per page.
         ),
       ),
     );
@@ -87,46 +83,29 @@ class _BookDateTableState extends State<BookDataTable> {
 }
 
 class _DataSource extends DataTableSource {
-  final List<Book> listBooks;
-  final List<Author> listAuthors;
-  final List<ViewModel> listViews;
-  final List<Category> listCategories;
-  final List<Chapters> chapters;
-  final List<Author> listAuthor;
+  final List<BookItem> listBookItems;
   final BuildContext context;
   final BookBloc bookBloc;
+  final int totalBook;
 
-  _DataSource(this.listBooks, this.context, this.bookBloc, this.listAuthors,
-      this.listViews, this.listCategories, this.chapters, this.listAuthor);
+  _DataSource(
+    this.listBookItems,
+    this.context,
+    this.bookBloc,
+    this.totalBook,
+  );
 
   @override
   DataRow getRow(int index) {
-    final item = listBooks[index];
+    final item = listBookItems[index % 5];
     return DataRow(cells: [
       DataCell(Text(item.id)),
       DataCell(Text(item.title)),
       DataCell(
-        Text(
-          (listAuthors
-              .firstWhere(
-                (author) => author.id == item.authodId,
-                orElse: () => Author(item.authodId, 'unknown',
-                    true), // Default value or handle accordingly
-              )
-              .fullName!),
-        ),
+        Text(item.author.fullName!),
       ),
       DataCell(
-        Text(
-          (listViews
-                  .firstWhere(
-                    (view) => view.bookId == item.id,
-                    orElse: () => ViewModel(
-                        item.id, 0), // Default value or handle accordingly
-                  )
-                  .views)
-              .toString(),
-        ),
+        Text(item.view.toString()),
       ),
       DataCell(
         Row(
@@ -138,10 +117,7 @@ class _DataSource extends DataTableSource {
                     context: context,
                     builder: (context) {
                       return BookDetail(
-                        book: item,
-                        categories: listCategories,
-                        listChapters: chapters,
-                        listAuthors: listAuthors,
+                        id: item.id,
                       );
                     });
               },
@@ -200,7 +176,7 @@ class _DataSource extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => listBooks.length;
+  int get rowCount => totalBook;
 
   @override
   int get selectedRowCount => 0;

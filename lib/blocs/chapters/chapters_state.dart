@@ -11,9 +11,8 @@ class ChaptersLoading extends ChaptersState{
   List<Object?> get props => [];
 }
 class ChaptersLoaded extends ChaptersState{
-  final List<Chapters> chapters;
 
-  const ChaptersLoaded({this.chapters = const <Chapters>[]});
+  const ChaptersLoaded();
   @override
-  List<Object?> get props => [chapters];
+  List<Object?> get props => [];
 }
