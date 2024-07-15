@@ -112,9 +112,9 @@ class _FormAddMissionState extends State<FormAddMission> {
                   },
                   dropDownItemCount: 3,
                   dropDownList: const [
-                    DropDownValueModel(name: 'Comment', value: "Comment"),
-                    DropDownValueModel(name: 'Read', value: "Read"),
-                    DropDownValueModel(name: 'coins', value: "coins"),
+                    DropDownValueModel(name: 'Comment', value: "comment"),
+                    DropDownValueModel(name: 'Read', value: "read"),
+                    DropDownValueModel(name: 'Coins', value: "coins"),
                   ],
                   onChanged: (val) {},
                 ),

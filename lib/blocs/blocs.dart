@@ -6,3 +6,4 @@ export 'user/user_bloc.dart';
 export 'view/view_bloc.dart';
 export 'mission/mission_bloc.dart';
 export 'audio/audio_bloc.dart';
+export 'contact/contact_bloc.dart';

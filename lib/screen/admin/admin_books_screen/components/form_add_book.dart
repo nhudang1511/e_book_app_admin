@@ -31,7 +31,6 @@ class _FormAddBookState extends State<FormAddBook> {
   final TextEditingController audiosController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
 
-
   late List<OptionCategory> listOptionCategories;
   late List<OptionCategory> selectedCategories = [];
   late Map<String, String> listChapters = {};
@@ -750,7 +749,8 @@ class _FormAddBookState extends State<FormAddBook> {
                   _fileImage != null &&
                   _fileBookReview1 != null &&
                   _fileBookReview2 != null) {
-                bookBloc.add(AddBook(
+                bookBloc.add(
+                  AddBook(
                     authorController.text,
                     selectedCategories.map((e) => e.idCate).toList(),
                     descriptionController.text,
@@ -759,7 +759,10 @@ class _FormAddBookState extends State<FormAddBook> {
                     titleController.text,
                     [_fileBookReview1!, _fileBookReview2!],
                     quantity != 0 ? quantity : quantityAudios,
-                    countryController.text));
+                    countryController.text,
+                    int.parse(priceController.text),
+                  ),
+                );
                 setState(() {
                   if (quantity != 0) {
                     addedChapters = List.generate(quantity, (index) => false);

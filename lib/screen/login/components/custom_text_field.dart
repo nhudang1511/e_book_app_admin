@@ -54,7 +54,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: TextFormField(
-        maxLength: widget.maxLength ?? null, // Check if maxLength is null
+        maxLength: widget.maxLength ?? null,
+        // Check if maxLength is null
         minLines: widget.minLength ?? null,
         controller: widget.controller,
         obscureText: widget.isObscureText == true,
@@ -89,10 +90,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
           setState(() {
             _showClearIcon = widget.controller.text.isNotEmpty;
           });
-          widget.onChanged!(text);
         },
-        validator: !_showClearIcon ? null : widget.validator,
-        autovalidateMode: AutovalidateMode.always,
+        validator: widget.validator,
       ),
     );
   }

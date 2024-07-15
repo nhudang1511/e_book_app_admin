@@ -8,3 +8,4 @@ export 'mission/mission_repository.dart';
 export 'notification/notification_repository.dart';
 export 'audio/audio_repository.dart';
 export 'statistic/statistic_repository.dart';
+export 'contact/contact_repository.dart';
