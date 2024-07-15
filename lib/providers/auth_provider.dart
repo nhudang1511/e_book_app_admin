@@ -12,8 +12,6 @@ class AuthProvider with ChangeNotifier {
 
   Status get status => _status;
 
-  final formkey = GlobalKey<FormState>();
-
   Admin? get user => _admin;
 
   TextEditingController email = TextEditingController();
@@ -46,8 +44,10 @@ class AuthProvider with ChangeNotifier {
       _status = Status.Authenticating;
       notifyListeners();
 
-      var result =
-          await _adminRepository.login(email.text.trim(), password.text.trim());
+      var result = await _adminRepository.login(
+        email.text.trim(),
+        password.text.trim(),
+      );
       if (result == true) {
         await _setup();
         notifyListeners();

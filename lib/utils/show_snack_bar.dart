@@ -11,32 +11,32 @@ enum Status { success, error }
 
 class ShowSnackBar {
   static void success(String message, BuildContext context) {
-    final sizeScreen = MediaQuery.of(context).size;
+    final sizeScreen = MediaQuery.of(context).size / 4;
     ElegantNotification.success(
       width: sizeScreen.width,
       position: Alignment.topRight,
       animation: AnimationType.fromTop,
       title: Text(Status.success.name.toUpperCase(),
           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-            fontWeight: FontWeight.bold,
-            color: successColor,
-          )),
+                fontWeight: FontWeight.bold,
+                color: successColor,
+              )),
       description: Text(message),
       showProgressIndicator: true,
     ).show(context);
   }
 
   static void error(String message, BuildContext context) {
-    final sizeScreen = MediaQuery.of(context).size;
+    final sizeScreen = MediaQuery.of(context).size / 4;
     ElegantNotification.error(
       width: sizeScreen.width,
-      position: Alignment.topLeft,
+      position: Alignment.topRight,
       animation: AnimationType.fromTop,
       title: Text(Status.error.name.toUpperCase(),
           style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-            fontWeight: FontWeight.bold,
-            color: errorColor,
-          )),
+                fontWeight: FontWeight.bold,
+                color: errorColor,
+              )),
       description: Text(message),
       showProgressIndicator: true,
     ).show(context);

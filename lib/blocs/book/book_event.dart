@@ -1,6 +1,6 @@
 part of 'book_bloc.dart';
 
-abstract class BookEvent  {
+abstract class BookEvent {
   const BookEvent();
 
   @override
@@ -31,21 +31,22 @@ class UpdateBook extends BookEvent {
   final int totalBook;
 
   const UpdateBook(
-    this.books,
-    this.totalBook,
-  );
+      this.books,
+      this.totalBook,
+      );
 
   @override
   List<Object?> get props => [
-        books,
-        totalBook,
-      ];
+    books,
+    totalBook,
+  ];
 }
 
 class AddBook extends BookEvent {
   final String authodId;
   final List<String> categoryId;
   final String description;
+  final int price;
   final PlatformFile imageUrl;
   final String language;
   final String title;
@@ -53,21 +54,31 @@ class AddBook extends BookEvent {
   final int chapters;
   final String country;
 
-  const AddBook(this.authodId, this.categoryId, this.description, this.imageUrl,
-      this.language, this.title, this.bookPreview, this.chapters, this.country);
+  const AddBook(
+      this.authodId,
+      this.categoryId,
+      this.description,
+      this.imageUrl,
+      this.language,
+      this.title,
+      this.bookPreview,
+      this.chapters,
+      this.country,
+      this.price);
 
   @override
   List<Object?> get props => [
-        authodId,
-        categoryId,
-        description,
-        imageUrl,
-        language,
-        title,
-        bookPreview,
-        chapters,
-        country
-      ];
+    authodId,
+    categoryId,
+    description,
+    imageUrl,
+    language,
+    title,
+    bookPreview,
+    chapters,
+    country,
+    price,
+  ];
 }
 
 class DeleteBook extends BookEvent {

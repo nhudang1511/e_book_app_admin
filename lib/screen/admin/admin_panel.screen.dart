@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../config/responsive.dart';
 import 'admin_books_screen/admin_books_screen.dart';
 import 'admin_categories_screen/admin_categories_screen.dart';
+import 'admin_contact_screen/admin_contact_screen.dart';
 import 'admin_users_screen/admin_users_screen.dart';
 import 'components/menu_app_controller.dart';
 import 'components/slider_menu.dart';
@@ -27,7 +28,7 @@ class _AdminPanelState extends State<AdminPanel>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this); // 4 tabs
+    _tabController = TabController(length: 6, vsync: this); // 4 tabs
 
     // Add listener to switch tabs when DrawerListTile is pressed
     _tabController.addListener(() {
@@ -62,7 +63,7 @@ class _AdminPanelState extends State<AdminPanel>
                         AdminBooksScreen(),
                         AdminUsersScreen(),
                         AdminMissionsScreen(),
-                        // AdminCoinsScreen()
+                        AdminContactScreen()
                       ],
                     ),
                   ),

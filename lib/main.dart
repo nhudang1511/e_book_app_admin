@@ -1,7 +1,6 @@
 import 'package:e_book_admin/blocs/audio/audio_bloc.dart';
 import 'package:e_book_admin/blocs/blocs.dart';
 import 'package:e_book_admin/config/share_preferences.dart';
-import 'package:e_book_admin/cubits/cubit.dart';
 import 'package:e_book_admin/repository/repositories.dart';
 import 'package:e_book_admin/screen/admin/components/menu_app_controller.dart';
 import 'package:e_book_admin/screen/screen.dart';
@@ -39,12 +38,6 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) => LoginCubit(
-            adminRepository: AdminRepository(),
-          ),
-          child: const LoginScreen(),
-        ),
-        BlocProvider(
           create: (_) => AuthorBloc(
             authorRepository: AuthorRepository(),
           )..add(
@@ -55,7 +48,7 @@ class MyApp extends StatelessWidget {
           create: (_) => BookBloc(
             bookRepository: BookRepository(),
           )..add(
-              LoadBooks(),
+              const LoadBooks(),
             ),
         ),
         BlocProvider(
@@ -92,11 +85,19 @@ class MyApp extends StatelessWidget {
           )..add(
               LoadMissions(),
             ),
-        ),BlocProvider(
+        ),
+        BlocProvider(
           create: (_) => AudioBloc(
             audioRepository: AudioRepository(),
           )..add(
-            LoadAudio(),
+              LoadAudio(),
+            ),
+        ),
+        BlocProvider(
+          create: (_) => ContactBloc(
+            contactRepository: ContactRepository(),
+          )..add(
+            LoadContact(),
           ),
         ),
       ],
@@ -146,7 +147,9 @@ class _AppPagesControllerState extends State<AppPagesController> {
           return const Scaffold(
             body: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: [Text("Something went wrong")],
+              children: [
+                Text("Something went wrong"),
+              ],
             ),
           );
         }

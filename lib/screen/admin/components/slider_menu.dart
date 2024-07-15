@@ -63,14 +63,14 @@ class SliderMenu extends StatelessWidget {
               },
               isSelected: _selectedTabIndex == 4,
             ),
-            // DrawerListTile(
-            //   title: 'Sales',
-            //   icons: Icons.monetization_on,
-            //   press: () {
-            //     _tabController.animateTo(5);
-            //   },
-            //   isSelected: _selectedTabIndex == 5,
-            // ),
+            DrawerListTile(
+              title: 'Questions',
+              icons: Icons.question_answer,
+              press: () {
+                _tabController.animateTo(5);
+              },
+              isSelected: _selectedTabIndex == 5,
+            ),
             if (!Responsive.isDesktop(context))
               TextButton(
                 onPressed: () => Navigator.pop(context),

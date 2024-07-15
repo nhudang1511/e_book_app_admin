@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+
 class CustomButton extends StatelessWidget {
   final String buttonText;
   final Color buttonColor;
   final Color buttonTextColor;
   final VoidCallback onTap;
   final Color? borderSideColor;
+
   const CustomButton({
     Key? key,
     required this.buttonText,
@@ -21,9 +23,8 @@ class CustomButton extends StatelessWidget {
       style: ButtonStyle(
           splashFactory: InkSplash.splashFactory,
           overlayColor: MaterialStatePropertyAll(
-            // whiteColor.withOpacity(0.2),
-            Colors.white.withOpacity(0.2)
-          ),
+              // whiteColor.withOpacity(0.2),
+              Colors.white.withOpacity(0.2)),
           backgroundColor: MaterialStatePropertyAll(
             buttonColor,
           ),
